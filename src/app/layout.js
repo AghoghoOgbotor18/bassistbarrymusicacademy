@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import AuthModalProvider from "./context/AuthModalContext";
 import AuthModal from "./components/AuthModal";
+import Footer from "./components/Footer";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
           <AuthModal />
+          <Footer />
         </AuthModalProvider>
       </body>
     </html>
