@@ -97,7 +97,10 @@ export default function AuthModal() {
                     email: formData.email,
                     password: formData.password,
                 });
-                if (error) throw error;
+                if (error){
+                    throw new Error("Something went wrong. Try again");
+                    console.log(error);
+                } ;
                 closeModal();
                 dispatch({ type: "reset" });
                 router.refresh();
