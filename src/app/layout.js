@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import AuthModalProvider from "./context/AuthModalContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
+import WhatsappLink from "./components/WhatsappLink";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -40,6 +41,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
           <AuthModal />
+          <WhatsappLink />
           <Footer />
         </AuthModalProvider>
       </body>
