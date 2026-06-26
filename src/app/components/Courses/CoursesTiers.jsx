@@ -12,7 +12,7 @@ const tiers = [
         tagColor: "bg-brass/15 text-brass border border-brass/30",
         accentColor: "border-brass/70",
         badgeColor: "bg-brass/10 text-brass",
-        buttonStyle: "border border-brass/80 text-ebony bg-brass/10 hover:bg-brass/7",
+        buttonStyle: "bg-maple/80 text-ebony hover:bg-maple/70",
         description: "Built for absolute beginners who want to start strong. No prior experience needed — just curiosity and commitment.",
         whatYouGet: [
             "Bass guitar fundamentals & anatomy",
@@ -57,7 +57,7 @@ const tiers = [
         tagColor: "bg-rosewood/25 text-rosewood border border-rosewood/30",
         accentColor: "border-rosewood",
         badgeColor: "bg-rosewood/10 text-rosewood",
-        buttonStyle: "border border-rosewood/80 text-ebony bg-rosewood/10 hover:bg-rosewood/7",
+        buttonStyle: "bg-maple/80 text-ebony hover:bg-maple/70",
         description: "For serious players ready to go professional. Studio session skills, improvisation, and advanced gospel technique.",
         whatYouGet: [
             "Everything in Intermediate",
