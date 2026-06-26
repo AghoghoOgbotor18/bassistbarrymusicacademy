@@ -46,4 +46,55 @@ export default function AboutHero() {
             </div>
         </section>
     );
+
 }
+
+
+/*import CoursesHero from "../components/Courses/CoursesHero";
+import CoursesOverview from "../components/Courses/CoursesOverview";
+import CoursesTiers from "../components/Courses/CoursesTiers";
+import CoursesProcess from "../components/Courses/CoursesProcess";
+import CoursesFAQ from "../components/Courses/CoursesFAQ";
+import CoursesCTA from "../components/Courses/CoursesCTA";
+
+export const metadata = {
+    title: "Courses | Bassist Barry Music Academy",
+    description: "Choose your bass learning path — Beginner, Intermediate, or Advanced. Structured courses with ebooks and video lessons.",
+};
+
+export default function CoursesPage() {
+    return (
+        <>
+            <CoursesHero />
+            <CoursesOverview />
+            <CoursesTiers />
+            <CoursesProcess />
+            <CoursesFAQ />
+            <CoursesCTA />
+        </>
+    );
+} 
+ 
+import AboutHero from "../components/About/AboutHero";
+import BarryStory from "../components/About/BarryStory";
+import BarryCredentials from "../components/About/BarryCredentials";
+import BarryMission from "../components/About/BarryMission";
+import AboutCTA from "../components/About/AboutCTA";
+
+export const metadata = {
+    title: "About Barry | Bassist Barry Music Academy",
+    description: "Meet Bassist Barry — professional bassist, gospel musician, and your instructor at BBMA.",
+};
+
+export default function AboutPage() {
+    return (
+        <>
+            <AboutHero />
+            <BarryStory />
+            <BarryCredentials />
+            <BarryMission />
+            <AboutCTA />
+        </>
+    );
+}
+*/
