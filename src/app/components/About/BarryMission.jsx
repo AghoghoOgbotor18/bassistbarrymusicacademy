@@ -24,7 +24,7 @@ export default function BarryMission() {
             <div className="max-w-6xl mx-auto">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                    {/* Left — visual block */}
+                    {/* Left block */}
                     <div className="relative">
                         <div className="relative bg-ebony rounded-3xl p-10 overflow-hidden">
                             {/* Decorative rings */}
@@ -33,7 +33,7 @@ export default function BarryMission() {
                             <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full border border-brass/20" />
 
                             {/* Top accent line */}
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-maple via-brass to-transparent" />
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-maple via-brass to-transparent" />
 
                             <p className="font-mono text-brass text-xs tracking-widest uppercase mb-6">
                                 The BBMA Promise
@@ -50,7 +50,7 @@ export default function BarryMission() {
                                 Progress is the product.
                             </p>
 
-                            {/* Fretboard divider */}
+                            {/* board divider */}
                             <div className="flex items-center">
                                 <div className="flex-1 h-px bg-brass/30" />
                                 {[0,1,2,3].map((i) => (
@@ -78,7 +78,7 @@ export default function BarryMission() {
                         <div className="absolute -bottom-4 -right-4 w-full h-full border-2 border-brass/25 rounded-3xl -z-10" />
                     </div>
 
-                    {/* Right — pillars */}
+                    {/* Right pillars */}
                     <div className="flex flex-col gap-8">
                         <div>
                             <p className="font-mono text-brass text-sm tracking-[0.2em] uppercase mb-3">

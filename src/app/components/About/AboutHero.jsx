@@ -9,7 +9,7 @@ export default function AboutHero() {
                     alt="Bassist Barry"
                     fill
                     priority
-                    className="object-cover object-top"
+                    className="object-cover object-bottom"
                     sizes="100vw"
                 />
                 {/* Multi-layer overlay for depth */}
