@@ -1,8 +1,8 @@
-import AboutHero from "../components/about/AboutHero";
-import BarryStory from "../components/about/BarryStory";
-import BarryCredentials from "../components/about/BarryCredentials";
-import BarryMission from "../components/about/BarryMission";
-import AboutCTA from "../components/about/AboutCTA";
+import AboutHero from "../components/About/AboutHero";
+import BarryStory from "../components/About/BarryStory";
+import BarryCredentials from "../components/About/BarryCredentials";
+import BarryMission from "../components/About/BarryMission";
+import AboutCTA from "../components/About/AboutCTA";
 
 export const metadata = {
     title: "About Barry | Bassist Barry Music Academy",
