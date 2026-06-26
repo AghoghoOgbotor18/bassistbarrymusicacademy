@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <AuthModalProvider>
           <Navbar />
-          <main className="pt-10">
+          <main className="">
             {children}
           </main>
           <AuthModal />

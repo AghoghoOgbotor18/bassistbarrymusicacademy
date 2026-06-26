@@ -34,6 +34,7 @@ export default function Navbar() {
     const [user, setUser] = useState(null);
     const [authReady, setAuthReady] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [scroll, setScroll] = useState(false);
     const dropdownRef = useRef(null);
     const pathname = usePathname();
     const router = useRouter();
@@ -41,6 +42,7 @@ export default function Navbar() {
     const supabase = createClient();
 
     useEffect(() => {
+
         supabase.auth.getUser().then(({ data: { user } }) => {
             setUser(user);
             setAuthReady(true);
@@ -55,6 +57,17 @@ export default function Navbar() {
 
         return () => subscription.unsubscribe();
     }, []);
+    
+    //handlescroll
+    useEffect(() => {
+        //handleScroll
+        const handleScroll = () => {
+            setScroll(window.scrollY > 50);
+        }
+        window.addEventListener("scroll", handleScroll);
+
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []) ;
 
     // close dropdown when clicking outside
     useEffect(() => {
@@ -79,7 +92,7 @@ export default function Navbar() {
     const fullName = user?.user_metadata?.full_name || "User";
 
     return (
-        <nav className="bg-ebony border-b border-brass/20 w-full fixed left-0 top-0 z-50">
+        <nav className={`border-b shadow-2xl border-brass/20 w-full fixed left-0 top-0 z-50 ${scroll ? "bg-ebony" : "bg-transparent"}`}>
             <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
                 <Link href="/" className="font-display text-xl font-bold text-parchment">
                     BBMA

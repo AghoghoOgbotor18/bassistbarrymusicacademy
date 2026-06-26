@@ -21,7 +21,7 @@ export default function HeroSection() {
     }, []);
 
     return (
-        <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+        <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center  py-10 overflow-hidden">
 
             {/* All images stacked — only the active one is visible */}
             {slides.map((slide, index) => (
@@ -45,11 +45,8 @@ export default function HeroSection() {
             {/* Dark overlay — sits above all images */}
             <div className="absolute inset-0 bg-ebony/80 z-10" />
 
-            {/* Top brass accent */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-brass/40 z-20" />
-
             {/* Content */}
-            <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
+            <div className="relative z-20 max-w-4xl mx-auto px-4 text-center">
                 <p className="font-mono text-maple text-xs tracking-[0.2em] uppercase mb-4">
                     Bassist Barry Music Academy
                 </p>
