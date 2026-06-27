@@ -1,6 +1,6 @@
-import ContactHero from "../components/contact/ContactHero";
-import ContactForm from "../components/contact/ContactForm";
-import ContactInfo from "../components/contact/ContactInfo";
+import ContactHero from "../components/Contact/ContactHero";
+import ContactForm from "../components/Contact/ContactForm";
+import ContactInfo from "../components/Contact/ContactInfo";
 
 export const metadata = {
     title: "Contact | Bassist Barry Music Academy",
