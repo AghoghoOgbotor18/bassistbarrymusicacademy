@@ -5,6 +5,7 @@ import AuthModalProvider from "./context/AuthModalContext";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
 import WhatsappLink from "./components/WhatsappLink";
+import SplashScreen from "./components/SplashScreen";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -37,6 +38,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <AuthModalProvider>
           <Navbar />
+          <SplashScreen />
           <main className="">
             {children}
           </main>
