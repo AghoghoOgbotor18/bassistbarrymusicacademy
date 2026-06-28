@@ -69,7 +69,7 @@ export default function CoursesPreview() {
                     {tiers.map((tier, i) => (
                         <div
                             key={i}
-                            className={`relative rounded-2xl border-2 ${tier.color} bg-ebony p-7 flex flex-col gap-5 hover:scale-[1.02] transition-transform duration-300`}
+                            className={`relative bg-white/2 rounded-2xl border-2 ${tier.color} bg-ebony p-7 flex flex-col gap-5 hover:scale-[1.02] transition-transform duration-300`}
                         >
                             {tier.popular && (
                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-maple text-ebony text-xs font-bold px-4 py-1 rounded-full">
