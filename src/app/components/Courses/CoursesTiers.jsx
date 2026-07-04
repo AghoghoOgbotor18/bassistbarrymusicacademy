@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import { useAuthModal } from "@/app/context/AuthModalContext";
-import { FaCheck, FaStar } from "react-icons/fa";
+import { createClient } from "@/app/lib/supabase";
+import { FaCheck, FaStar, FaSpinner } from "react-icons/fa";
 
 const tiers = [
     {
@@ -57,7 +59,7 @@ const tiers = [
         tagColor: "bg-rosewood/25 text-rosewood border border-rosewood/30",
         accentColor: "border-rosewood",
         badgeColor: "bg-rosewood/10 text-rosewood",
-        buttonStyle: "bg-maple/80 text-ebony hover:bg-maple/70",
+        buttonStyle: "border border-rosewood/80 text-ebony bg-rosewood/10 hover:bg-rosewood/7",
         description: "For serious players ready to go professional. Studio session skills, improvisation, and advanced gospel technique.",
         whatYouGet: [
             "Everything in Intermediate",
@@ -74,6 +76,45 @@ const tiers = [
 
 export default function CoursesTiers() {
     const { openModal } = useAuthModal();
+    const [loadingTier, setLoadingTier] = useState(null);
+    const [error, setError] = useState(null);
+    const supabase = createClient();
+
+    const handleEnroll = async (tierSlug) => {
+        setError(null);
+
+        // check if user is logged in first
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            openModal("signup");
+            return;
+        }
+
+        setLoadingTier(tierSlug);
+
+        try {
+            const response = await fetch("/api/paystack/initialize", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tierSlug }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || data.details || "Failed to initialize payment");
+            }
+
+            // redirect to Paystack checkout
+            window.location.href = data.authorization_url;
+
+        } catch (err) {
+            setError(err.message);
+            console.error(err);
+            setLoadingTier(null);
+        }
+    };
 
     return (
         <section className="bg-ebony py-24 px-4">
@@ -89,6 +130,12 @@ export default function CoursesTiers() {
                     always level up. Every tier builds on the last.
                 </p>
 
+                {error && (
+                    <div className="max-w-md mx-auto mb-8 bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3 text-red-400 text-sm text-center">
+                        {error}
+                    </div>
+                )}
+
                 <div className="flex flex-col gap-8">
                     {tiers.map((tier, i) => (
                         <div
@@ -96,7 +143,6 @@ export default function CoursesTiers() {
                             id={tier.id}
                             className={`relative rounded-2xl border-2 ${tier.accentColor} bg-white/5 overflow-hidden`}
                         >
-                            {/* Popular banner */}
                             {tier.popular && (
                                 <div className="bg-maple text-ebony text-xs font-bold px-6 py-1.5 text-center font-mono tracking-widest uppercase flex items-center justify-center gap-2">
                                     <FaStar className="text-xs" />
@@ -106,7 +152,7 @@ export default function CoursesTiers() {
                             )}
 
                             <div className="p-8 md:p-10 grid md:grid-cols-3 gap-8">
-                                {/* Left tier info */}
+                                {/* Left — tier info */}
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-3 flex-wrap">
                                         <span className={`font-mono text-xs px-3 py-1 rounded-full ${tier.tagColor}`}>
@@ -132,10 +178,18 @@ export default function CoursesTiers() {
                                     </div>
 
                                     <button
-                                        onClick={() => openModal("signup")}
-                                        className={`mt-2 py-3 px-6 rounded-lg font-medium text-sm transition ${tier.buttonStyle}`}
+                                        onClick={() => handleEnroll(tier.id)}
+                                        disabled={loadingTier === tier.id}
+                                        className={`mt-2 py-3 px-6 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${tier.buttonStyle}`}
                                     >
-                                        Enroll in {tier.level}
+                                        {loadingTier === tier.id ? (
+                                            <>
+                                                <FaSpinner className="animate-spin text-sm" />
+                                                Redirecting...
+                                            </>
+                                        ) : (
+                                            `Enroll in ${tier.level}`
+                                        )}
                                     </button>
                                 </div>
 

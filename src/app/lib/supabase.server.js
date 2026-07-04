@@ -18,8 +18,7 @@ export async function createServerSupabaseClient() {
                             cookieStore.set(name, value, options)
                         );
                     } catch {
-                        // called from a Server Component — cookie setting
-                        // will be handled by the middleware instead
+                        // server component — middleware handles cookie setting
                     }
                 },
             },

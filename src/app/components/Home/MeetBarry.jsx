@@ -10,12 +10,12 @@ const stats = [
     },
     {
         icon: <FaMusic className="text-maple text-xl" />,
-        value: "50+",
+        value: "10+",
         label: "Gospel Artists Worked With",
     },
     {
         icon: <FaChalkboardTeacher className="text-maple text-xl" />,
-        value: "2+",
+        value: "6+",
         label: "Years Teaching",
     },
 ];
@@ -61,7 +61,7 @@ export default function MeetBarry() {
                     {/* Text side */}
                     <div className="flex flex-col gap-6">
                         <h3 className="font-display text-3xl font-bold text-ebony">
-                            Barry Barridoge
+                           Fortune Barizasi Baridoge
                         </h3>
 
                         <div className="flex flex-col gap-4 text-ebony/75 leading-relaxed">

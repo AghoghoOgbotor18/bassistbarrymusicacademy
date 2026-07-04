@@ -9,12 +9,12 @@ const timeline = [
     {
         year: "2016",
         title: "First Stage Performance",
-        description: "Two years of self-teaching paid off. Barry stepped onto his first major stage, playing for a gospel concert in Lagos.",
+        description: "Two years of self-teaching paid off. Barry stepped onto his first major stage, playing for a gospel concert in Port Harcourt.",
     },
     {
         year: "2018",
         title: "Going Professional",
-        description: "Barry began touring and recording with gospel artists across Nigeria, building a reputation for reliability, feel, and technical skill.",
+        description: "Barry began touring and recording with gospel artists across the world, building a reputation for reliability, feel, and technical skill.",
     },
     {
         year: "2022",
@@ -24,7 +24,7 @@ const timeline = [
     {
         year: "2024",
         title: "Growing The Community",
-        description: "BBMA now serves students across Nigeria at every skill level, with structured courses, exclusive materials, and a growing community of bassists.",
+        description: "BBMA now serves students across the world at every skill level, with structured courses, exclusive materials, and a growing community of bass players.",
     },
 ];
 

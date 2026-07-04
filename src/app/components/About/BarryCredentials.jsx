@@ -9,19 +9,19 @@ const stats = [
     },
     {
         icon: <FaMicrophone className="text-maple text-3xl" />,
-        value: "50+",
+        value: "10+",
         label: "Gospel Artists",
         description: "Played and recorded with artists across Nigeria's gospel scene",
     },
     {
         icon: <FaChalkboardTeacher className="text-maple text-3xl" />,
-        value: "2+",
+        value: "6+",
         label: "Years Teaching",
         description: "Dedicated to structured, results-driven bass education",
     },
     {
         icon: <FaUsers className="text-maple text-3xl" />,
-        value: "200+",
+        value: "50+",
         label: "Students Trained",
         description: "A growing community of bassists at every skill level",
     },
