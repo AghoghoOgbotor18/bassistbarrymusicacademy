@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "../lib/supabase";
@@ -9,21 +10,14 @@ import {
     FaPlay,
     FaBookOpen,
     FaSpinner,
-    FaSmile,
 } from "react-icons/fa";
 import LogoutButton from "../components/LogoutButton";
-import MaterialCard from "../components/DashboardContent/MaterialCard";
-import LockedCard from "../components/DashboardContent/LockedCard";
 import Link from "next/link";
 
-export default function DashboardPage() {
+// ---- separate component for the part that uses useSearchParams ----
+function PaymentBanner() {
     const searchParams = useSearchParams();
     const [banner, setBanner] = useState(null);
-    const [user, setUser] = useState(null);
-    const [enrollment, setEnrollment] = useState(null);
-    const [materials, setMaterials] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const supabase = createClient();
 
     useEffect(() => {
         const payment = searchParams.get("payment");
@@ -39,15 +33,69 @@ export default function DashboardPage() {
         }
     }, [searchParams]);
 
+    if (!banner) return null;
+
+    return (
+        <>
+            {banner === "success" && (
+                <div className="mb-6 flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-green-800">
+                    <FaCheckCircle className="text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-medium text-sm">Payment successful!</p>
+                        <p className="text-xs text-green-700 mt-0.5">
+                            Your enrollment is confirmed and your ebook
+                            is on its way to your email. Check your inbox!
+                        </p>
+                    </div>
+                </div>
+            )}
+            {banner === "failed" && (
+                <div className="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4 text-red-800">
+                    <FaTimesCircle className="text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-medium text-sm">
+                            Payment failed or was cancelled
+                        </p>
+                        <p className="text-xs text-red-700 mt-0.5">
+                            Please try again. If the issue persists,{" "}
+                            <Link href="/contact" className="underline">
+                                contact us
+                            </Link>.
+                        </p>
+                    </div>
+                </div>
+            )}
+            {banner === "already_processed" && (
+                <div className="mb-6 flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 text-blue-800">
+                    <FaCheckCircle className="text-blue-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="font-medium text-sm">You're already enrolled!</p>
+                        <p className="text-xs text-blue-700 mt-0.5">
+                            This payment was already processed.
+                            Your content is available below.
+                        </p>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
+
+// ---- main dashboard component ----
+export default function DashboardPage() {
+    const [user, setUser] = useState(null);
+    const [enrollment, setEnrollment] = useState(null);
+    const [materials, setMaterials] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const supabase = createClient();
+
     useEffect(() => {
         async function loadDashboard() {
             try {
-                // get current user
                 const { data: { user } } = await supabase.auth.getUser();
                 setUser(user);
                 if (!user) return;
 
-                // get user's highest active enrollment
                 const { data: enrollmentData } = await supabase
                     .from("enrollments")
                     .select(`
@@ -67,17 +115,12 @@ export default function DashboardPage() {
 
                 setEnrollment(enrollmentData);
 
-                // RLS automatically returns only what this user
-                // is allowed to see based on their enrollment
                 const { data: materialsData, error } = await supabase
                     .from("materials")
                     .select("*")
                     .order("sort_order", { ascending: true });
 
-                if (error) {
-                    console.error("Materials fetch error:", error);
-                }
-
+                if (error) console.error("Materials fetch error:", error);
                 setMaterials(materialsData || []);
 
             } catch (error) {
@@ -111,51 +154,10 @@ export default function DashboardPage() {
         <div className="min-h-screen bg-parchment">
             <div className="max-w-6xl mx-auto px-4 py-12">
 
-                {/* Banners */}
-                {banner === "success" && (
-                    <div className="mb-6 flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-green-800">
-                        <FaCheckCircle className="text-green-500 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <p className="font-medium text-sm">Payment successful!</p>
-                            <p className="text-xs text-green-700 mt-0.5">
-                                Your enrollment is confirmed and your ebook 
-                                is on its way to your email. Check your inbox!
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {banner === "failed" && (
-                    <div className="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4 text-red-800">
-                        <FaTimesCircle className="text-red-500 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <p className="font-medium text-sm">
-                                Payment failed or was cancelled
-                            </p>
-                            <p className="text-xs text-red-700 mt-0.5">
-                                Please try again. If the issue persists,{" "}
-                                <Link href="/contact" className="underline">
-                                    contact us
-                                </Link>.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
-                {banner === "already_processed" && (
-                    <div className="mb-6 flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 text-blue-800">
-                        <FaCheckCircle className="text-blue-500 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <p className="font-medium text-sm">
-                                You're already enrolled!
-                            </p>
-                            <p className="text-xs text-blue-700 mt-0.5">
-                                This payment was already processed. 
-                                Your content is available below.
-                            </p>
-                        </div>
-                    </div>
-                )}
+                {/* Suspense wraps the useSearchParams component */}
+                <Suspense fallback={null}>
+                    <PaymentBanner />
+                </Suspense>
 
                 {/* Header */}
                 <div className="flex items-start justify-between mb-10 gap-4">
@@ -164,7 +166,7 @@ export default function DashboardPage() {
                             Welcome back
                         </p>
                         <h1 className="font-display text-3xl md:text-4xl font-bold text-ebony">
-                            Hey, {firstName} <FaSmile />
+                            Hey, {firstName} 👋
                         </h1>
                     </div>
                     <LogoutButton />
@@ -224,7 +226,7 @@ export default function DashboardPage() {
                     )}
                 </div>
 
-                {/* Free materials visible to all logged in users */}
+                {/* Free materials */}
                 {freeMaterials.length > 0 && (
                     <div className="mb-12">
                         <div className="mb-6">
@@ -271,13 +273,12 @@ export default function DashboardPage() {
                                     Materials Coming Soon
                                 </p>
                                 <p className="text-ebony/50 text-sm max-w-xs mx-auto">
-                                    Barry is preparing your course materials. 
+                                    Barry is preparing your course materials.
                                     Check back soon!
                                 </p>
                             </div>
                         )
                     ) : (
-                        // locked preview for unenrolled users
                         <div>
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
                                 {[1, 2, 3].map((i) => (
@@ -289,7 +290,7 @@ export default function DashboardPage() {
                                     Ready to unlock your content?
                                 </p>
                                 <p className="text-parchment/55 text-sm mb-6 max-w-sm mx-auto">
-                                    Enroll in any tier to get instant access to 
+                                    Enroll in any tier to get instant access to
                                     exclusive videos and your ebook delivered by email.
                                 </p>
                                 <Link

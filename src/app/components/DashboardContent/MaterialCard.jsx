@@ -1,7 +1,7 @@
 "use client";
-import { FaPlay } from "react-icons/fa";
+import { FaPlay, FaBookOpen } from "react-icons/fa";
 
-export default function MaterialCard({ material }) {
+function MaterialCard({ material }) {
     const [playing, setPlaying] = useState(false);
 
     if (material.type === "video") {
@@ -22,11 +22,9 @@ export default function MaterialCard({ material }) {
                         onClick={() => setPlaying(true)}
                         className="relative w-full aspect-video bg-ebony flex items-center justify-center group cursor-pointer"
                     >
-                        {/* Play button */}
                         <div className="w-14 h-14 rounded-full bg-maple flex items-center justify-center group-hover:scale-110 transition-transform duration-200 z-10">
                             <FaPlay className="text-ebony text-lg ml-1" />
                         </div>
-                        {/* Overlay gradient */}
                         <div className="absolute inset-0 bg-linear-to-t from-ebony/60 to-transparent" />
                         <p className="absolute bottom-3 left-4 text-parchment/60 text-xs font-mono">
                             Click to play
@@ -74,9 +72,8 @@ export default function MaterialCard({ material }) {
                         </p>
                     )}
                     {material.url && (
-                        
                         <a
-                        href={material.url}
+                            href={material.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-3 inline-flex items-center gap-2 bg-ebony text-parchment text-sm px-4 py-2 rounded-lg hover:bg-rosewood transition w-fit"

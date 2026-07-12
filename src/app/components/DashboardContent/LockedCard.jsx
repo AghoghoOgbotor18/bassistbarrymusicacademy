@@ -1,6 +1,6 @@
 import { FaLock } from "react-icons/fa";
 
-export default function LockedCard() {
+function LockedCard() {
     return (
         <div className="bg-white border border-brass/10 rounded-2xl overflow-hidden opacity-50 select-none">
             <div className="aspect-video bg-ebony/10 flex items-center justify-center">
