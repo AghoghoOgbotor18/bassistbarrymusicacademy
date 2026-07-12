@@ -93,8 +93,13 @@ export default function DashboardPage() {
         async function loadDashboard() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
+
+                if (!user) {
+                    window.location.href = "/";
+                    return;
+                }
+
                 setUser(user);
-                if (!user) return;
 
                 const { data: enrollmentData } = await supabase
                     .from("enrollments")
@@ -125,6 +130,7 @@ export default function DashboardPage() {
 
             } catch (error) {
                 console.error("Dashboard load error:", error);
+                window.location.href = "/";
             } finally {
                 setLoading(false);
             }
