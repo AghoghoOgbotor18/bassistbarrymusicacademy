@@ -1,4 +1,6 @@
-import { FaQuoteLeft, FaStar } from "react-icons/fa";
+"use client";
+import { FaQuoteLeft, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
 
 const testimonials = [
     {
@@ -45,10 +47,79 @@ const testimonials = [
     },
 ];
 
+function getVisibleCount() {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth < 640) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+}
+
 export default function Testimonials() {
+    const [current, setCurrent] = useState(0);
+    const [visibleCount, setVisibleCount] = useState(3);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [direction, setDirection] = useState("right");
+    const autoPlayRef = useRef(null);
+
+    useEffect(() => {
+        setVisibleCount(getVisibleCount());
+
+        function handleResize() {
+            setVisibleCount(getVisibleCount());
+            setCurrent(0);
+        }
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // auto advance every 5 seconds
+    useEffect(() => {
+        autoPlayRef.current = setInterval(() => {
+            goNext();
+        }, 5000);
+        return () => clearInterval(autoPlayRef.current);
+    }, [current, visibleCount]);
+
+    const totalSlides = testimonials.length - visibleCount + 1;
+
+    const goNext = () => {
+        if (isAnimating) return;
+        setDirection("right");
+        setIsAnimating(true);
+        setTimeout(() => {
+            setCurrent((prev) => (prev + 1) % totalSlides);
+            setIsAnimating(false);
+        }, 400);
+    };
+
+    const goPrev = () => {
+        if (isAnimating) return;
+        setDirection("left");
+        setIsAnimating(true);
+        setTimeout(() => {
+            setCurrent((prev) => (prev - 1 + totalSlides) % totalSlides);
+            setIsAnimating(false);
+        }, 400);
+    };
+
+    const goTo = (index) => {
+        if (isAnimating || index === current) return;
+        setDirection(index > current ? "right" : "left");
+        setIsAnimating(true);
+        setTimeout(() => {
+            setCurrent(index);
+            setIsAnimating(false);
+        }, 400);
+    };
+
+    const visibleTestimonials = testimonials.slice(current, current + visibleCount);
+
     return (
-        <section className="bg-ebony py-20 px-4">
+        <section className="bg-ebony py-20 px-4 overflow-hidden">
             <div className="max-w-6xl mx-auto">
+
+                {/* Header */}
                 <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
                     Student Stories
                 </p>
@@ -56,44 +127,100 @@ export default function Testimonials() {
                     What Our Students Say
                 </h2>
                 <p className="text-parchment/55 text-center max-w-xl mx-auto mb-16 leading-relaxed">
-                    Real feedback from real students across Nigeria who have gone through
-                    the BBMA programme.
+                    Real feedback from real students across Nigeria who have gone
+                    through the BBMA programme.
                 </p>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {testimonials.map((t, i) => (
-                        <div
+                {/* Carousel wrapper */}
+                <div className="relative">
+
+                    {/* Cards */}
+                    <div
+                        className="grid gap-6 transition-all duration-400"
+                        style={{
+                            gridTemplateColumns: `repeat(${visibleCount}, 1fr)`,
+                            opacity: isAnimating ? 0 : 1,
+                            transform: isAnimating
+                                ? `translateX(${direction === "right" ? "-20px" : "20px"})`
+                                : "translateX(0)",
+                            transition: "opacity 0.4s ease, transform 0.4s ease",
+                        }}
+                    >
+                        {visibleTestimonials.map((t, i) => (
+                            <div
+                                key={`${current}-${i}`}
+                                className="bg-white/5 border border-parchment/10 rounded-2xl p-6 flex flex-col gap-4 hover:border-brass/40 transition-colors duration-300"
+                            >
+                                {/* Stars */}
+                                <div className="flex gap-1">
+                                    {Array.from({ length: t.rating }).map((_, s) => (
+                                        <FaStar key={s} className="text-maple text-sm" />
+                                    ))}
+                                </div>
+
+                                {/* Quote */}
+                                <div className="relative">
+                                    <FaQuoteLeft className="text-maple/20 text-4xl absolute -top-1 -left-1" />
+                                    <p className="text-parchment/75 text-sm leading-relaxed pl-4">
+                                        {t.text}
+                                    </p>
+                                </div>
+
+                                {/* Author */}
+                                <div className="flex items-center gap-3 mt-auto pt-4 border-t border-parchment/10">
+                                    <div className="w-9 h-9 rounded-full bg-maple flex items-center justify-center text-ebony text-xs font-bold flex-shrink-0">
+                                        {t.initials}
+                                    </div>
+                                    <div>
+                                        <p className="text-parchment font-medium text-sm">{t.name}</p>
+                                        <p className="text-parchment/45 text-xs">{t.role}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Left arrow */}
+                    <button
+                        onClick={goPrev}
+                        disabled={isAnimating}
+                        className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-parchment/10 border border-parchment/20 flex items-center justify-center text-parchment hover:bg-maple hover:border-maple hover:text-ebony transition disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                        aria-label="Previous"
+                    >
+                        <FaChevronLeft className="text-sm" />
+                    </button>
+
+                    {/* Right arrow */}
+                    <button
+                        onClick={goNext}
+                        disabled={isAnimating}
+                        className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-parchment/10 border border-parchment/20 flex items-center justify-center text-parchment hover:bg-maple hover:border-maple hover:text-ebony transition disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                        aria-label="Next"
+                    >
+                        <FaChevronRight className="text-sm" />
+                    </button>
+                </div>
+
+                {/* Dot indicators */}
+                <div className="flex items-center justify-center gap-2 mt-10">
+                    {Array.from({ length: totalSlides }).map((_, i) => (
+                        <button
                             key={i}
-                            className="bg-white/5 border border-parchment/10 rounded-2xl p-6 flex flex-col gap-4 hover:border-brass/40 transition-colors duration-300"
-                        >
-                            {/* Stars */}
-                            <div className="flex gap-1">
-                                {Array.from({ length: t.rating }).map((_, s) => (
-                                    <FaStar key={s} className="text-maple text-sm" />
-                                ))}
-                            </div>
-
-                            {/* Quote */}
-                            <div className="relative">
-                                <FaQuoteLeft className="text-maple/20 text-4xl absolute -top-1 -left-1" />
-                                <p className="text-parchment/75 text-sm leading-relaxed pl-4">
-                                    {t.text}
-                                </p>
-                            </div>
-
-                            {/* Author */}
-                            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-parchment/10">
-                                <div className="w-9 h-9 rounded-full bg-maple flex items-center justify-center text-ebony text-xs font-bold flex-shrink-0">
-                                    {t.initials}
-                                </div>
-                                <div>
-                                    <p className="text-parchment font-medium text-sm">{t.name}</p>
-                                    <p className="text-parchment/45 text-xs">{t.role}</p>
-                                </div>
-                            </div>
-                        </div>
+                            onClick={() => goTo(i)}
+                            className={`transition-all duration-300 rounded-full ${
+                                current === i
+                                    ? "bg-maple w-6 h-2"
+                                    : "bg-parchment/20 w-2 h-2 hover:bg-parchment/40"
+                            }`}
+                            aria-label={`Go to slide ${i + 1}`}
+                        />
                     ))}
                 </div>
+
+                {/* Slide counter */}
+                <p className="text-center text-parchment/30 font-mono text-xs mt-4 tracking-widest">
+                    {current + 1} / {totalSlides}
+                </p>
             </div>
         </section>
     );

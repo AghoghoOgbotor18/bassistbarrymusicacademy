@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthModal } from "../context/AuthModalContext";
 import { createClient } from "../lib/supabase";
@@ -214,7 +214,7 @@ export default function Navbar() {
                                     onClick={() => setIsOpen(false)}
                                     className="text-parchment/80 hover:text-maple text-sm w-fit"
                                 >
-                                    Dashboard →
+                                    Dashboard <FaArrowRight />
                                 </Link>
                                 <button
                                     onClick={handleLogout}
