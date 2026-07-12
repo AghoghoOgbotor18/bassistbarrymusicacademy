@@ -109,9 +109,9 @@ export async function POST(request) {
         });
 
     } catch (error) {
-        console.error("Payment initialization error:", error);
+        console.error("Payment initialization error:", error.message, error.stack);
         return NextResponse.json(
-            { error: "Something went wrong" },
+            { error: error.message || "Something went wrong" },
             { status: 500 }
         );
     }

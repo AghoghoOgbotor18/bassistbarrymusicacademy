@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useAuthModal } from "@/app/context/AuthModalContext";
-import { createClient } from "@/app/lib/supabase";
-import { FaCheck, FaStar, FaSpinner } from "react-icons/fa";
+import { useAuthModal } from "../../context/AuthModalContext";
+import { createClient } from "../../lib/supabase";
+import { FaCheck, FaStar, FaSpinner, FaTimes } from "react-icons/fa";
+import ErrorModal from "../../components/ErrorModal"
 
 const tiers = [
     {
@@ -12,9 +13,9 @@ const tiers = [
         price: "₦15,000",
         duration: "4 weeks",
         tagColor: "bg-brass/15 text-brass border border-brass/30",
-        accentColor: "border-brass/70",
+        accentColor: "border-brass/50",
         badgeColor: "bg-brass/10 text-brass",
-        buttonStyle: "bg-maple/80 text-ebony hover:bg-maple/70",
+        buttonStyle: "bg-maple text-ebony hover:bg-maple/90",
         description: "Built for absolute beginners who want to start strong. No prior experience needed — just curiosity and commitment.",
         whatYouGet: [
             "Bass guitar fundamentals & anatomy",
@@ -56,10 +57,10 @@ const tiers = [
         tag: "Professional",
         price: "₦40,000",
         duration: "12 weeks",
-        tagColor: "bg-rosewood/25 text-rosewood border border-rosewood/30",
-        accentColor: "border-rosewood",
+        tagColor: "bg-rosewood/15 text-rosewood border border-rosewood/30",
+        accentColor: "border-rosewood/60",
         badgeColor: "bg-rosewood/10 text-rosewood",
-        buttonStyle: "border border-rosewood/80 text-ebony bg-rosewood/10 hover:bg-rosewood/7",
+        buttonStyle: "bg-maple text-ebony hover:bg-maple/90",
         description: "For serious players ready to go professional. Studio session skills, improvisation, and advanced gospel technique.",
         whatYouGet: [
             "Everything in Intermediate",
@@ -77,15 +78,14 @@ const tiers = [
 export default function CoursesTiers() {
     const { openModal } = useAuthModal();
     const [loadingTier, setLoadingTier] = useState(null);
-    const [error, setError] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
     const supabase = createClient();
 
     const handleEnroll = async (tierSlug) => {
-        setError(null);
+        setErrorMessage(null);
 
         // check if user is logged in first
         const { data: { user } } = await supabase.auth.getUser();
-
         if (!user) {
             openModal("signup");
             return;
@@ -103,21 +103,26 @@ export default function CoursesTiers() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || data.details || "Failed to initialize payment");
+                throw new Error(data.error || "Failed to initialize payment");
             }
 
             // redirect to Paystack checkout
             window.location.href = data.authorization_url;
 
         } catch (err) {
-            setError(err.message);
-            console.error(err);
+            setErrorMessage(err.message);
             setLoadingTier(null);
         }
     };
 
     return (
         <section className="bg-ebony py-24 px-4">
+            {/* Error modal */}
+            <ErrorModal
+                message={errorMessage}
+                onClose={() => setErrorMessage(null)}
+            />
+
             <div className="max-w-6xl mx-auto">
                 <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
                     The Three Tiers
@@ -126,15 +131,9 @@ export default function CoursesTiers() {
                     Choose Your Path
                 </h2>
                 <p className="text-parchment/50 text-center max-w-xl mx-auto mb-16 leading-relaxed">
-                    Not sure which tier fits you? Start with Beginner — you can
+                    Not sure which tier fits you? Start with Beginner, you can
                     always level up. Every tier builds on the last.
                 </p>
-
-                {error && (
-                    <div className="max-w-md mx-auto mb-8 bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3 text-red-400 text-sm text-center">
-                        {error}
-                    </div>
-                )}
 
                 <div className="flex flex-col gap-8">
                     {tiers.map((tier, i) => (
@@ -210,7 +209,7 @@ export default function CoursesTiers() {
                                     </ul>
                                 </div>
 
-                                {/* Right — outcome card */}
+                                {/* Right — outcome cards */}
                                 <div className="flex flex-col justify-between gap-6">
                                     <div className="bg-white/5 border border-parchment/10 rounded-xl p-6 flex flex-col gap-3">
                                         <p className="font-mono text-xs tracking-widest uppercase text-parchment/40">
