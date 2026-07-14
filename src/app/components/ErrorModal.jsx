@@ -1,7 +1,7 @@
 import React from "react";
 import { FaTimes } from "react-icons/fa";
 
-function ErrorModal({ message, onClose }) {
+export default function ErrorModal({ message, onClose }) {
     if (!message) return null;
     return (
         <div

@@ -1,7 +1,7 @@
 "use client";
 import { FaPlay, FaBookOpen } from "react-icons/fa";
 
-function MaterialCard({ material }) {
+export default function MaterialCard({ material }) {
     const [playing, setPlaying] = useState(false);
 
     if (material.type === "video") {
