@@ -19,35 +19,40 @@ const ebookFiles = {
 };
 
 export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
-    const ebook = ebookFiles[tierId];
+    console.log("sendEbookEmail called with:", { email, tierId, tierName });
+
+    const ebook = ebookFiles[parseInt(tierId)];
 
     if (!ebook) {
-        console.error("No ebook found for tier:", tierId);
+        console.error("No ebook found for tier ID:", tierId, "Available:", Object.keys(ebookFiles));
         return;
     }
+
+    console.log("Ebook found:", ebook.name, "path:", ebook.path);
 
     const firstName = fullName?.split(" ")[0] || "there";
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     try {
-        // generate a signed URL that expires in 24 hours
         const adminSupabase = createAdminClient();
+        console.log("Generating signed URL for:", ebook.path);
+
         const { data: signedUrlData, error: signedUrlError } = await adminSupabase
             .storage
-            .from("ebooks")
-            .createSignedUrl(ebook.path, 60 * 60 * 24); // 86400 seconds = 24 hours
+            .from("ebook")
+            .createSignedUrl(ebook.path, 60 * 60 * 24);
 
         if (signedUrlError || !signedUrlData?.signedUrl) {
-            console.error("Failed to generate signed URL:", signedUrlError);
+            console.error("Signed URL error:", JSON.stringify(signedUrlError));
             return;
         }
 
-        const ebookUrl = signedUrlData.signedUrl;
+        console.log("Signed URL generated successfully");
 
         const { data, error } = await resend.emails.send({
-            from: "Bassist Barry Music Academy <noreply@bassistbarry.com>",
+            from: "Bassist Barry Music Academy <onboarding@resend.dev>", // use resend.dev for testing
             to: email,
-            subject: `Your ${tierName} Ebook is Here! 🎸`,
+            subject: `Your ${tierName} Ebook is Here! `,
             html: `
                 <!DOCTYPE html>
                 <html>
@@ -65,7 +70,7 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                                 Bassist Barry Music Academy
                             </p>
                             <h1 style="color:#EDE0CC;font-size:26px;margin:0;line-height:1.3;">
-                                Your Ebook is Ready 🎸
+                                Your Ebook is Ready
                             </h1>
                             <div style="display:flex;align-items:center;margin-top:20px;">
                                 <div style="flex:1;height:1px;background-color:rgba(140,106,63,0.3);"></div>
@@ -79,7 +84,7 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                         <!-- Body -->
                         <div style="background-color:#ffffff;padding:40px;border-radius:0 0 16px 16px;">
                             <h2 style="color:#1B130D;font-size:20px;margin:0 0 16px 0;">
-                                Hey ${firstName}! 👋
+                                Hey ${firstName}! 
                             </h2>
                             <p style="color:#555;line-height:1.7;margin:0 0 16px 0;font-size:15px;">
                                 Thank you for enrolling in the
@@ -155,12 +160,12 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
         });
 
         if (error) {
-            console.error("Resend error:", error);
+            console.error("Resend send error:", JSON.stringify(error));
         } else {
-            console.log("Ebook email sent successfully:", data?.id);
+            console.log("Email sent successfully. ID:", data?.id, "To:", email);
         }
 
     } catch (err) {
-        console.error("Email send failed:", err);
+        console.error("sendEbookEmail caught error:", err.message, err.stack);
     }
 }
