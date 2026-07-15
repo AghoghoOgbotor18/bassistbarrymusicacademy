@@ -1,20 +1,18 @@
-import { Resend } from "resend";
-import { createAdminClient } from "./supabase.admin";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from "nodemailer";
+import { createAdminClient } from "./supabase.admin.js";
 
 const ebookFiles = {
     1: {
         name: "Beginner Bass Course Ebook",
-        path: "beginner-bass-guide.pdf",
+        path: "beginner_bass_guide.pdf",
     },
     2: {
         name: "Intermediate Bass Course Ebook",
-        path: "intermediate-bass-guide.pdf",
+        path: "intermediate_bass_guide.pdf",
     },
     3: {
         name: "Advanced Bass Course Ebook",
-        path: "advanced-bass-guide.pdf",
+        path: "advanced_bass_guide.pdf",
     },
 };
 
@@ -24,18 +22,16 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
     const ebook = ebookFiles[parseInt(tierId)];
 
     if (!ebook) {
-        console.error("No ebook found for tier ID:", tierId, "Available:", Object.keys(ebookFiles));
+        console.error("No ebook found for tier:", tierId);
         return;
     }
-
-    console.log("Ebook found:", ebook.name, "path:", ebook.path);
 
     const firstName = fullName?.split(" ")[0] || "there";
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
     try {
+        // generate 24-hour signed URL from Supabase Storage
         const adminSupabase = createAdminClient();
-        console.log("Generating signed URL for:", ebook.path);
 
         const { data: signedUrlData, error: signedUrlError } = await adminSupabase
             .storage
@@ -47,19 +43,27 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
             return;
         }
 
-        console.log("Signed URL generated successfully");
+        console.log("Signed URL generated for:", ebook.path);
 
-        const { data, error } = await resend.emails.send({
-            from: "Bassist Barry Music Academy <onboarding@resend.dev>", // use resend.dev for testing
+        // create Gmail transporter
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASSWORD,
+            },
+        });
+
+        await transporter.sendMail({
+            from: `"Bassist Barry Music Academy" <${process.env.GMAIL_USER}>`,
             to: email,
-            subject: `Your ${tierName} Ebook is Here! `,
+            subject: `Your ${tierName} Ebook is Here!`,
             html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="utf-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Your BBMA Ebook</title>
                 </head>
                 <body style="margin:0;padding:0;background-color:#EDE0CC;font-family:Arial,sans-serif;">
                     <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
@@ -104,7 +108,7 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                                 <p style="color:rgba(237,224,204,0.5);font-size:12px;margin:0 0 24px 0;">
                                     ${tierName} tier · Digital PDF · Link expires in 24 hours
                                 </p>
-                                <a href="${ebookUrl}"
+                                <a href="${signedUrlData.signedUrl}"
                                    style="background-color:#D9A246;color:#1B130D;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">
                                     Download Your Ebook →
                                 </a>
@@ -127,7 +131,7 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
 
                             <p style="color:#777;font-size:13px;line-height:1.7;margin:20px 0 8px 0;">
                                 The download link expires in 24 hours. If you need it
-                                again after that, just visit your dashboard or
+                                again, visit your dashboard or
                                 <a href="${appUrl}/contact" style="color:#D9A246;text-decoration:none;">
                                     contact us
                                 </a>
@@ -149,8 +153,11 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                         <!-- Footer -->
                         <div style="text-align:center;margin-top:24px;">
                             <p style="color:#8C6A3F;font-size:11px;margin:0 0 6px 0;">
-                                &copy; ${new Date().getFullYear()} Bassist Barry Music Academy.
+                                © ${new Date().getFullYear()} Bassist Barry Music Academy.
                                 All rights reserved.
+                            </p>
+                            <p style="color:#8C6A3F;font-size:11px;margin:0;">
+                                Built with ♪ in Nigeria
                             </p>
                         </div>
                     </div>
@@ -159,13 +166,9 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
             `,
         });
 
-        if (error) {
-            console.error("Resend send error:", JSON.stringify(error));
-        } else {
-            console.log("Email sent successfully. ID:", data?.id, "To:", email);
-        }
+        console.log("Email sent via Gmail to:", email);
 
     } catch (err) {
-        console.error("sendEbookEmail caught error:", err.message, err.stack);
+        console.error("Email send failed:", err.message);
     }
 }
