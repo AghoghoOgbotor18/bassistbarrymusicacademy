@@ -90,11 +90,12 @@ export default function Navbar() {
 
     const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "User";
     const fullName = user?.user_metadata?.full_name || "User";
+    const alwaysSolid = pathname.startsWith("/dashboard");
 
     return (
         <>
             <nav className={`border-b border-brass/20 w-full fixed left-0 top-0 z-50 transition-colors duration-300 ${
-                scroll || isOpen ? "bg-ebony shadow-2xl" : "bg-transparent"
+                alwaysSolid || scroll || isOpen ? "bg-ebony shadow-2xl" : "bg-transparent"
             }`}>
                 <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
                     <Link href="/" className="font-display text-xl font-bold text-parchment">
