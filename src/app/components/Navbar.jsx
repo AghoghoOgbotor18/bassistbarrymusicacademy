@@ -212,7 +212,7 @@ export default function Navbar() {
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setIsOpen(false)}
-                                    className="text-parchment/80 hover:text-maple text-sm w-fit"
+                                    className="text-parchment/80 hover:text-maple text-sm w-fit flex items-center gap-1.5"
                                 >
                                     Dashboard <FaArrowRight />
                                 </Link>

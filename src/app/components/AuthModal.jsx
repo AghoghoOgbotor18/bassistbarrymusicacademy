@@ -98,7 +98,7 @@ export default function AuthModal() {
                     password: formData.password,
                 });
                 if (error){
-                    throw new Error("Something went wrong. Try again");
+                    throw new Error("Invalid email/password");
                     console.log(error);
                 } ;
                 closeModal();

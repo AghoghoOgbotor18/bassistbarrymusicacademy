@@ -4,7 +4,7 @@ import { FaCheck } from "react-icons/fa";
 const tiers = [
     {
         level: "Beginner",
-        price: "₦15,000",
+        price: "₦7,000",
         description: "Perfect if you've never touched a bass before. Build a rock-solid foundation from day one.",
         color: "border-brass/40",
         badge: "bg-brass/10 text-brass",
@@ -19,7 +19,7 @@ const tiers = [
     },
     {
         level: "Intermediate",
-        price: "₦25,000",
+        price: "₦14,000",
         description: "You know the basics. Now it's time to develop your sound, speed, and musicality.",
         color: "border-maple",
         badge: "bg-maple/10 text-maple",
@@ -35,7 +35,7 @@ const tiers = [
     },
     {
         level: "Advanced",
-        price: "₦40,000",
+        price: "₦50,000",
         description: "For serious players ready to go professional and command any stage or studio.",
         color: "border-rosewood/60",
         badge: "bg-rosewood/10 text-rosewood",
