@@ -29,9 +29,9 @@ export default function PaymentBanner() {
                     <FaCheckCircle className="text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
                         <p className="font-medium text-sm">Payment successful!</p>
-                        <p className="text-xs text-green-700 mt-0.5">
+                        <p className="text-xs text-green-700 mt-1.5">
                             Your enrollment is confirmed and your ebook
-                            is on its way to your email. Check your inbox!
+                            is on its way to your email. Check your inbox or spam!
                         </p>
                     </div>
                 </div>
@@ -43,7 +43,7 @@ export default function PaymentBanner() {
                         <p className="font-medium text-sm">
                             Payment failed or was cancelled
                         </p>
-                        <p className="text-xs text-red-700 mt-0.5">
+                        <p className="text-xs text-red-700 mt-1.5">
                             Please try again. If the issue persists,{" "}
                             <Link href="/contact" className="underline">
                                 contact us
@@ -57,7 +57,7 @@ export default function PaymentBanner() {
                     <FaCheckCircle className="text-blue-500 flex-shrink-0 mt-0.5" />
                     <div>
                         <p className="font-medium text-sm">You're already enrolled!</p>
-                        <p className="text-xs text-blue-700 mt-0.5">
+                        <p className="text-xs text-blue-700 mt-1.5">
                             This payment was already processed.
                             Your content is available below.
                         </p>
