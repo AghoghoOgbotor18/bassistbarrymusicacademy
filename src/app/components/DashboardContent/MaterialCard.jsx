@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { FaPlay, FaBookOpen } from "react-icons/fa";
 
 export default function MaterialCard({ material }) {
@@ -71,16 +72,21 @@ export default function MaterialCard({ material }) {
                             {material.description}
                         </p>
                     )}
-                    {material.url && (
+                    {/* uses signedUrl generated in dashboard/page.js */}
+                    {material.signedUrl ? (
                         <a
-                            href={material.url}
+                            href={material.signedUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-3 inline-flex items-center gap-2 bg-ebony text-parchment text-sm px-4 py-2 rounded-lg hover:bg-rosewood transition w-fit"
                         >
                             <FaBookOpen className="text-xs" />
-                            Read Ebook
+                            Download Ebook
                         </a>
+                    ) : (
+                        <p className="text-ebony/30 text-xs mt-3 italic">
+                            Generating download link...
+                        </p>
                     )}
                 </div>
             </div>

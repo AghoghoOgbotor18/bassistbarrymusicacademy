@@ -23,6 +23,7 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
 
+
     useEffect(() => {
         async function loadDashboard() {
             try {
@@ -37,15 +38,7 @@ export default function DashboardPage() {
 
                 const { data: enrollmentData } = await supabase
                     .from("enrollments")
-                    .select(`
-                        *,
-                        tiers (
-                            id,
-                            name,
-                            slug,
-                            rank
-                        )
-                    `)
+                    .select(`*, tiers (id, name, slug, rank)`)
                     .eq("user_id", user.id)
                     .eq("status", "active")
                     .order("enrolled_at", { ascending: false })
@@ -60,7 +53,26 @@ export default function DashboardPage() {
                     .order("sort_order", { ascending: true });
 
                 if (error) console.error("Materials fetch error:", error);
-                setMaterials(materialsData || []);
+
+                // generate signed URLs for ebook materials
+                const materialsWithUrls = await Promise.all(
+                    (materialsData || []).map(async (material) => {
+                        if (material.type === "ebook" && material.storage_path) {
+                            try {
+                                const response = await fetch(
+                                    `/api/storage/signed-url?path=${encodeURIComponent(material.storage_path)}`
+                                );
+                                const data = await response.json();
+                                return { ...material, signedUrl: data.url };
+                            } catch {
+                                return material;
+                            }
+                        }
+                        return material;
+                    })
+                );
+
+                setMaterials(materialsWithUrls);
 
             } catch (error) {
                 console.error("Dashboard load error:", error);
