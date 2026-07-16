@@ -109,12 +109,19 @@ export async function POST(request) {
                 .eq("id", userId)
                 .single();
 
-            sendEbookEmail({
-                email: userEmail,
-                fullName: profile?.full_name,
-                tierId: parseInt(tierId),
-                tierName,
-            }).catch(console.error);
+            console.log("About to call sendEbookEmail for:", userEmail);
+            
+            try{
+                await sendEbookEmail({
+                    email: userEmail,
+                    fullName: profile?.full_name,
+                    tierId: parseInt(tierId),
+                    tierName,
+                });
+                console.log("sendEbookEmail Completed")
+            } catch(emailErr){
+                console.error("sendEbookEmail threw:", emailErr.message, emailErr.stack);
+            }
 
             console.log("Webhook: enrollment created for user:", userId);
         }

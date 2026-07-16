@@ -18,6 +18,8 @@ const ebookFiles = {
 
 export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
     console.log("sendEbookEmail called with:", { email, tierId, tierName });
+    console.log("GMAIL_USER exists:", !!process.env.GMAIL_USER);
+    console.log("GMAIL_APP_PASSWORD exists:", !!process.env.GMAIL_APP_PASSWORD);
 
     const ebook = ebookFiles[parseInt(tierId)];
 
