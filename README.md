@@ -1,6 +1,6 @@
 # Bassist Barry Music Academy (BBMA)
 
-A full-stack music course enrollment platform built with Next.js 16 App Router, Tailwind CSS v4, Supabase, Paystack, and Nodemailer. Students can browse courses, register, make payments, receive ebooks by email, and access tier-gated video content on a personal dashboard.
+A full-stack music course enrollment platform built with Next.js 16 App Router, Tailwind CSS v4, Supabase, Paystack, and Nodemailer. Students can browse courses, register, make payments, receive ebooks by email, and access tier-gated video content and downloadable ebooks on a personal dashboard.
 
 **Live:** [bassistbarrymusicacademy.vercel.app](https://bassistbarrymusicacademy.vercel.app)
 
@@ -37,19 +37,20 @@ A full-stack music course enrollment platform built with Next.js 16 App Router, 
 ## Features
 
 ### Public Pages
-- **Home** - Hero slideshow, Meet Barry section, course tier preview, testimonials carousel, CTA, footer
-- **About** - Barry's story timeline, credentials, vision/mission/values
-- **Courses** - Detailed tier breakdown, how it works, FAQ accordion
-- **Contact** - Contact form with real-time validation, contact info, social links
+- **Home** — Hero slideshow with crossfade, Meet Barry bio section, course tier preview, testimonials carousel, CTA, footer
+- **About** — Barry's story timeline, credentials stats, vision/mission/values
+- **Courses** — Detailed tier breakdown, how it works, FAQ accordion, error modal on payment failure
+- **Contact** — Contact form with real-time validation, contact info cards, social links
 
 ### Auth System
 - Global auth modal (login / signup / forgot password) using Context API + `useReducer`
-- No separate auth pages - everything lives in a modal overlay
-- Real-time form validation - required fields, password match, error clearing on keystroke
+- No separate auth pages — everything lives in a modal overlay
+- Real-time form validation — required fields, password match checking, error clearing on keystroke
 - Forgot password flow sends a reset link via Supabase Auth
 - Password reset page at `/auth/reset-password`
-- Auth-aware navbar - shows avatar with initials + greeting when logged in, dropdown with name/email/dashboard/logout
+- Auth-aware navbar — shows avatar with initials + first name greeting when logged in, dropdown with name/email/dashboard/logout
 - `onAuthStateChange` listener keeps navbar in sync without manual state passing
+- Navbar is transparent on homepage hero, always solid on all other pages
 
 ### Payments
 - Paystack integration with server-side initialization and verification
@@ -59,20 +60,25 @@ A full-stack music course enrollment platform built with Next.js 16 App Router, 
 - Webhook handler with HMAC-SHA512 signature verification as a safety net
 - Replay attack protection — duplicate payment references are detected and rejected
 - Payment status tracked: `pending` → `success` / `failed`
+- Payment error shown as a modal overlay instead of inline text
 
 ### Ebook Delivery
 - Nodemailer + Gmail SMTP sends branded HTML email after payment confirmation
 - Ebooks stored in a **private** Supabase Storage bucket
-- 24-hour signed URL generated per delivery — expires after download window
+- 24-hour signed URL generated per email delivery — expires after download window
 - Non-blocking email send — doesn't delay the user's redirect to dashboard
+- Ebooks also available for re-download directly from the dashboard at any time
 
 ### Dashboard
 - Protected route — unauthenticated users redirected to home
 - Shows free welcome video to all registered users
 - Shows tier-gated video content based on enrollment
+- Shows downloadable ebook cards per tier — Beginner sees beginner ebook, Intermediate sees beginner + intermediate, Advanced sees all three
+- Ebook download uses 2-hour signed URLs generated via a dedicated API route (`/api/storage/signed-url`)
 - Shows locked placeholder cards to unenrolled users with CTA to enroll
 - Enrollment status card with active tier and enrollment date
 - Payment success/failed/already-processed banner on redirect
+- Navbar always solid on dashboard regardless of scroll position
 
 ### Database Security
 - Row Level Security (RLS) on all tables
@@ -80,6 +86,7 @@ A full-stack music course enrollment platform built with Next.js 16 App Router, 
 - Users can only read/write their own data
 - Materials policy uses tier rank comparison — Advanced students access all lower-tier content too
 - Admin client (service role key) used only in server-side API routes
+- Supabase Storage has its own policy — service role granted access to the ebook bucket separately from database RLS
 
 ---
 
@@ -90,37 +97,43 @@ src/
   app/
     api/
       paystack/
-        initialize/route.js   ← creates pending payment, initializes Paystack
-        verify/route.js       ← verifies payment server-side, creates enrollment
-        webhook/route.js      ← Paystack webhook with HMAC verification
+        initialize/route.js     ← creates pending payment, initializes Paystack
+        verify/route.js         ← verifies payment server-side, creates enrollment, sends email
+        webhook/route.js        ← Paystack webhook with HMAC-SHA512 verification
+      storage/
+        signed-url/route.js     ← generates 2-hour signed URL for dashboard ebook downloads
     auth/
-      reset-password/page.js  ← password reset landing page
+      reset-password/page.js    ← password reset landing page
     components/
-      about/                  ← AboutHero, BarryStory, BarryCredentials, BarryMission, AboutCTA
-      contact/                ← ContactHero, ContactForm, ContactInfo
-      courses/                ← CoursesHero, CoursesOverview, CoursesTiers, CoursesProcess, CoursesFAQ, CoursesCTA
-      home/                   ← HeroSection, MeetBarry, CoursesPreview, WhyChooseBBMA, Testimonials, FinalCTA
-      AuthModal.jsx           ← login / signup / forgot password modal
-      AuthModalContext.jsx    ← global modal state via Context API
+      about/                    ← AboutHero, BarryStory, BarryCredentials, BarryMission, AboutCTA
+      contact/                  ← ContactHero, ContactForm, ContactInfo
+      courses/                  ← CoursesHero, CoursesOverview, CoursesTiers, CoursesProcess, CoursesFAQ, CoursesCTA
+      home/                     ← HeroSection, MeetBarry, CoursesPreview, WhyChooseBBMA, Testimonials, FinalCTA
+      DashboardContent/
+        MaterialCard.jsx        ← renders video and ebook cards (must have export default)
+        LockedCard.jsx          ← placeholder card for unenrolled users
+        PaymentBanner.jsx       ← reads ?payment= query param, wrapped in Suspense
+      AuthModal.jsx             ← login / signup / forgot password modal
+      AuthModalContext.jsx      ← global modal state via Context API
       Footer.jsx
       LogoutButton.jsx
-      Navbar.jsx
-      SplashScreen.jsx        ← animated SVG bass guitar on first visit
+      Navbar.jsx                ← auth-aware, transparent on home only, solid on dashboard
+      SplashScreen.jsx          ← animated SVG bass guitar on first visit (sessionStorage)
     context/
       AuthModalContext.jsx
     dashboard/
-      page.js                 ← protected dashboard with tier-gated content
+      page.js                   ← protected dashboard, generates signed URLs for ebooks
     lib/
-      supabase.js             ← browser client (createBrowserClient)
-      supabase.server.js      ← server client with cookie handling
-      supabase.admin.js       ← admin client with service role key (bypasses RLS)
-      sendEbookEmail.js       ← Nodemailer Gmail ebook delivery
+      supabase.js               ← browser client (createBrowserClient)
+      supabase.server.js        ← server client with cookie handling
+      supabase.admin.js         ← admin client with service role key (bypasses RLS)
+      sendEbookEmail.js         ← Nodemailer Gmail ebook delivery with Supabase signed URL
     about/page.js
     contact/page.js
     courses/page.js
-    page.js                   ← homepage
+    page.js                     ← homepage
     layout.js
-    globals.css               ← Tailwind v4 @theme tokens
+    globals.css                 ← Tailwind v4 @theme tokens
 ```
 
 ---
@@ -145,7 +158,23 @@ materials         -- videos and ebooks, gated by tier rank or is_free flag
 | Intermediate | 2 | ₦25,000 |
 | Advanced | 3 | ₦40,000 |
 
-Higher rank unlocks all lower-rank content — an Advanced student sees Beginner and Intermediate materials too.
+Higher rank unlocks all lower-rank content — an Advanced student sees Beginner and Intermediate materials too. This applies to both videos and ebooks on the dashboard.
+
+### Materials Table — Ebook Entries
+
+```sql
+-- Beginner ebook
+insert into public.materials (tier_id, title, description, type, storage_path, is_free, sort_order)
+values (1, 'Beginner Bass Course Ebook', '...', 'ebook', 'beginner_bass_guide.pdf', false, 1);
+
+-- Intermediate ebook
+insert into public.materials (tier_id, title, description, type, storage_path, is_free, sort_order)
+values (2, 'Intermediate Bass Course Ebook', '...', 'ebook', 'intermediate_bass_guide.pdf', false, 2);
+
+-- Advanced ebook
+insert into public.materials (tier_id, title, description, type, storage_path, is_free, sort_order)
+values (3, 'Advanced Bass Course Ebook', '...', 'ebook', 'advanced_bass_guide.pdf', false, 3);
+```
 
 ### Key RLS Policy (Materials)
 
@@ -166,6 +195,17 @@ create policy "Paid materials visible to enrolled users"
       and et.rank >= mt.rank
     )
   );
+```
+
+### Supabase Storage Policy (Ebook Bucket)
+
+```sql
+-- Service role needs its own storage policy — database RLS doesn't cover Storage
+create policy "Service role can do all on ebook bucket"
+on storage.objects for all
+to service_role
+using (bucket_id = 'ebook')
+with check (bucket_id = 'ebook');
 ```
 
 ### Auto-Profile Trigger
@@ -194,12 +234,12 @@ User redirected to Paystack checkout
       ↓
 User pays (card / bank transfer / USSD)
       ↓
-┌─────────────────────────────────────────┐
-│  Two parallel paths (both idempotent)   │
-│                                         │
-│  Browser redirect →  /api/paystack/verify    │
-│  Paystack webhook →  /api/paystack/webhook   │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│  Two parallel paths (both idempotent)        │
+│                                             │
+│  Browser redirect →  /api/paystack/verify   │
+│  Paystack webhook →  /api/paystack/webhook  │
+└─────────────────────────────────────────────┘
       ↓
 Server verifies with Paystack API (server-to-server)
       ↓
@@ -212,6 +252,8 @@ Enrollment created
 Ebook email sent via Gmail (non-blocking)
       ↓
 User redirected to /dashboard?payment=success
+      ↓
+Dashboard loads — signed URLs generated for ebook download cards
 ```
 
 ---
@@ -290,7 +332,7 @@ createClient(url, key, {
 ```
 
 ### 4. `export default` Missing on Helper Components
-**Problem:** Components like `MaterialCard`, `LockedCard`, `PaymentBanner`, and `ErrorModal` were defined in the dashboard file without `export default`, then imported in other files — causing build failures and "module not found" errors.
+**Problem:** Components like `MaterialCard`, `LockedCard`, `PaymentBanner`, and `ErrorModal` were defined in the dashboard file without `export default`, then imported in other files — causing build failures and "module not found" errors. No warning is shown — the import silently resolves to `undefined`.
 
 **Fix:** Any component defined in its own file and imported elsewhere must have `export default`. Components defined and used in the same file don't need it.
 
@@ -319,8 +361,8 @@ createClient(url, key, {
 
 **Fix:** Always import from `next/navigation` in App Router projects:
 ```js
-import { useRouter, usePathname } from "next/navigation";
-import { useRouter } from "next/router"; // Pages Router only
+import { useRouter, usePathname } from "next/navigation"; // ✅
+import { useRouter } from "next/router"; // ❌ Pages Router only
 ```
 
 ### 9. Supabase Environment Variables Not on Vercel
@@ -345,7 +387,7 @@ This makes `bg-ebony`, `text-maple` etc. available as Tailwind utility classes a
 
 **Fix:** Always wrap `fill` images in a parent with `relative` and either a fixed height or an aspect ratio class:
 ```jsx
-<div className="relative aspect-video"> {/* or h-screen, etc. */}
+<div className="relative aspect-video">
   <Image src="..." fill className="object-cover" />
 </div>
 ```
@@ -355,7 +397,7 @@ This makes `bg-ebony`, `text-maple` etc. available as Tailwind utility classes a
 
 **Fix:** All hooks must be called unconditionally at the top of the component, before any conditional returns:
 ```jsx
-// correct
+// ✅ correct
 const [error, setError] = useState(null);
 const [formData, dispatch] = useReducer(formReducer, initialState);
 if (!open) return null; // ← early return AFTER all hooks
@@ -370,34 +412,70 @@ tier_id: parseInt(tierId),
 const ebook = ebookFiles[parseInt(tierId)];
 ```
 
+### 14. Supabase Storage Has Separate Policies From Database RLS
+**Problem:** Even with the service role key (which bypasses database RLS), Supabase Storage has its own independent policy system. A private bucket with 0 storage policies blocks ALL access — including the service role — causing signed URL generation to fail silently.
+
+**Fix:** Create a dedicated storage policy for the service role:
+```sql
+create policy "Service role can do all on ebook bucket"
+on storage.objects for all
+to service_role
+using (bucket_id = 'ebook')
+with check (bucket_id = 'ebook');
+```
+Database RLS and Storage policies are completely separate systems in Supabase — bypassing one does not bypass the other.
+
+### 15. Ebooks Must Not Live in `public/`
+**Problem:** Files in `public/` are accessible to anyone who knows the URL — no authentication required. Putting paid ebooks there means anyone can download them without paying.
+
+**Fix:** Store ebooks in a private Supabase Storage bucket. Generate time-limited signed URLs server-side (via an API route that first verifies the user's session) and use those URLs for both email delivery and dashboard download links. The underlying file path is never exposed to the client.
+
+### 16. `useState` Missing Import in Extracted Components
+**Problem:** When `MaterialCard` was extracted into its own file, the `useState` import wasn't included. The component used `playing` state for video playback but `useState` was never imported — causing a silent crash whenever a video card rendered.
+
+**Fix:** Always check imports when extracting components from a parent file. Every hook used in a component must be explicitly imported:
+```js
+import { useState } from "react"; // ← don't forget this
+```
+
+### 17. Signed URLs for Dashboard Ebooks Must Go Through an API Route
+**Problem:** The admin client (service role key) can't be called from the browser — it would expose the service role key to the client.
+
+**Fix:** Create a dedicated API route (`/api/storage/signed-url`) that verifies the user's session first, then uses the admin client server-side to generate the signed URL. The browser calls the API route, the API route calls Supabase Storage — the service role key never leaves the server.
+
 ---
 
 ## Challenges & Solutions
 
-### Challenge 1 - Building a Content Gate That Can't Be Bypassed
+### Challenge 1 — Building a Content Gate That Can't Be Bypassed
 Simply hiding buttons in the UI is not security. A user who knows the API can call Supabase directly and read any row.
 
 **Solution:** Supabase Row Level Security policies enforce access at the database level. The materials policy joins enrollments → tiers and checks `et.rank >= mt.rank` on every query. Even a direct API call with the anon key returns nothing for content the user isn't enrolled in.
 
-### Challenge 2 - Payment Verification Security
+### Challenge 2 — Payment Verification Security
 If you verify payments client-side, anyone can fake a successful response in the browser.
 
 **Solution:** The client never makes any trust decisions about payment success. The verify route calls Paystack's API server-to-server using the secret key. The client just provides a reference string — all decision-making happens on the server.
 
-### Challenge 3 - Ebook Security
+### Challenge 3 — Ebook Security
 Storing ebooks in `public/` means anyone who knows the URL can access them without paying.
 
-**Solution:** Ebooks live in a private Supabase Storage bucket. After payment is confirmed, the server generates a time-limited signed URL (24 hours) and emails it. The URL is unique per delivery and stops working after 24 hours. The underlying file path is never exposed to the client.
+**Solution:** Ebooks live in a private Supabase Storage bucket. After payment is confirmed, the server generates a time-limited signed URL (24 hours) and emails it. For dashboard access, a separate 2-hour signed URL is generated per session via `/api/storage/signed-url`. The underlying file path is never exposed to the client.
 
-### Challenge 4 - Missed Payments (Browser Tab Closed)
+### Challenge 4 — Missed Payments (Browser Tab Closed)
 If a user pays on Paystack but closes the browser before the redirect completes, the verify route never runs and the enrollment is never created.
 
 **Solution:** A Paystack webhook runs server-to-server independently of the browser. Both the redirect route and the webhook can create the enrollment — but the replay attack check (querying `payments` for an existing `success` status) ensures only one enrollment is ever created, even if both fire.
 
-### Challenge 5 - Next.js App Router Learning Curve
-First time using Next.js App Router - concepts like Server Components, `"use client"`, `cookies()` API, and route handlers are all different from Vite/CRA.
+### Challenge 5 — Cumulative Ebook Access by Tier
+Students who pay for Intermediate should get the Beginner ebook too — they paid more and shouldn't have less access.
 
-**Solution:** Built understanding incrementally, started with static pages, then added client components for interactivity, then server-side API routes for payments. The key mental model: Server Components by default, opt into `"use client"` only when you need `useState`, `onClick`, or browser APIs.
+**Solution:** The RLS rank-based policy (`et.rank >= mt.rank`) already handles this at the database level. All that was needed was inserting ebook materials into the `materials` table with the correct `tier_id` and `sort_order`. Supabase automatically returns the right ebooks per student — no application-level filtering needed.
+
+### Challenge 6 — Next.js App Router Learning Curve
+First time using Next.js App Router — concepts like Server Components, `"use client"`, `cookies()` API, and route handlers are all different from Vite/CRA.
+
+**Solution:** Built understanding incrementally — started with static pages, then added client components for interactivity, then server-side API routes for payments. The key mental model: Server Components by default, opt into `"use client"` only when you need `useState`, `onClick`, or browser APIs.
 
 ---
 
@@ -409,3 +487,4 @@ First time using Next.js App Router - concepts like Server Components, `"use cli
 - [ ] Email resend functionality for students who didn't receive their ebook
 - [ ] Course progress tracking on the dashboard
 - [ ] Paystack live keys for production payments
+- [ ] Contact form wired to Nodemailer so messages actually send
