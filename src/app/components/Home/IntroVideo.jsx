@@ -66,7 +66,7 @@ export default function IntroVideo() {
     };
 
     return (
-        <section ref={sectionRef} className="bg-parchment py-20 px-4">
+        <section ref={sectionRef} className="bg-parchment py-20 px-4 overflow-x-hidden">
             <div className="max-w-6xl mx-auto">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
 

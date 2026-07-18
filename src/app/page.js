@@ -8,7 +8,7 @@ import WhyChooseBBMA from "./components/Home/WhyChooseBBMA";
 
 export default function Home(){
   return(
-    <main>
+    <main className="overflow-x-hidden">
       <HeroSection />
       <MeetBarry />
       <IntroVideo />
