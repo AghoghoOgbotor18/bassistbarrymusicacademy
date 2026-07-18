@@ -1,6 +1,8 @@
 "use client";
 import { FaQuoteLeft, FaStar, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { fadeUp } from "../ui/animations";
 
 const testimonials = [
     {
@@ -118,19 +120,24 @@ export default function Testimonials() {
     return (
         <section className="bg-ebony py-20 px-4 overflow-hidden">
             <div className="max-w-6xl mx-auto">
-
-                {/* Header */}
-                <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
-                    Student Stories
-                </p>
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-parchment text-center mb-4">
-                    What Our Students Say
-                </h2>
-                <p className="text-parchment/55 text-center max-w-xl mx-auto mb-16 leading-relaxed">
-                    Real feedback from real students across Nigeria who have gone
-                    through the BBMA programme.
-                </p>
-
+                {/* header */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                >
+                    <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
+                        Student Stories
+                    </p>
+                    <h2 className="font-display text-4xl md:text-5xl font-bold text-parchment text-center mb-4">
+                        What Our Students Say
+                    </h2>
+                    <p className="text-parchment/55 text-center max-w-xl mx-auto mb-16 leading-relaxed">
+                        Real feedback from real students across Nigeria who have gone
+                        through the BBMA programme.
+                    </p>
+                </motion.div>
                 {/* Carousel wrapper */}
                 <div className="relative">
 

@@ -1,5 +1,8 @@
+'use client'
 import Link from "next/link";
 import { FaCheck } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
 
 const tiers = [
     {
@@ -54,21 +57,35 @@ export default function CoursesPreview() {
     return (
         <section className="bg-ebony py-20 px-4">
             <div className="max-w-6xl mx-auto">
-                <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
-                    Choose Your Path
-                </p>
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-parchment text-center mb-4">
-                    What You'll Learn
-                </h2>
-                <p className="text-parchment/60 text-center max-w-xl mx-auto mb-16 leading-relaxed">
-                    Three structured tiers designed to take you from your very first note
-                    to commanding any stage or studio in Nigeria and beyond.
-                </p>
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                >
+                    <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
+                        Choose Your Path
+                    </p>
+                    <h2 className="font-display text-4xl md:text-5xl font-bold text-parchment text-center mb-4">
+                        What You'll Learn
+                    </h2>
+                    <p className="text-parchment/60 text-center max-w-xl mx-auto mb-16 leading-relaxed">
+                        Three structured tiers designed to take you from your very first note
+                        to commanding any stage or studio in Nigeria and beyond.
+                    </p>
+                </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <motion.div
+                    className="grid md:grid-cols-3 gap-6"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.15 }}
+                >
                     {tiers.map((tier, i) => (
-                        <div
+                        <motion.div
                             key={i}
+                            variants={staggerItem}
                             className={`relative bg-white/2 rounded-2xl border-2 ${tier.color} bg-ebony p-7 flex flex-col gap-5 hover:scale-[1.02] transition-transform duration-300`}
                         >
                             {tier.popular && (
@@ -76,19 +93,13 @@ export default function CoursesPreview() {
                                     Most Popular
                                 </div>
                             )}
-
                             <div>
                                 <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full ${tier.badge}`}>
                                     {tier.level}
                                 </span>
-                                <p className="font-display text-3xl font-bold text-parchment mt-4">
-                                    {tier.price}
-                                </p>
-                                <p className="text-parchment/55 text-sm mt-2 leading-relaxed">
-                                    {tier.description}
-                                </p>
+                                <p className="font-display text-3xl font-bold text-parchment mt-4">{tier.price}</p>
+                                <p className="text-parchment/55 text-sm mt-2 leading-relaxed">{tier.description}</p>
                             </div>
-
                             <div className="flex-1 flex flex-col gap-3">
                                 {tier.features.map((feature, j) => (
                                     <div key={j} className="flex items-start gap-3">
@@ -97,7 +108,6 @@ export default function CoursesPreview() {
                                     </div>
                                 ))}
                             </div>
-
                             <Link
                                 href="/courses"
                                 className={`mt-2 text-center py-3 rounded-lg font-medium transition text-sm ${
@@ -108,13 +118,19 @@ export default function CoursesPreview() {
                             >
                                 Get Started
                             </Link>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
 
-                <p className="text-center text-parchment/40 text-sm mt-10">
+                <motion.p
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="text-center text-parchment/40 text-sm mt-10"
+                >
                     All tiers include a digital ebook delivered to your email after payment.
-                </p>
+                </motion.p>
             </div>
         </section>
     );

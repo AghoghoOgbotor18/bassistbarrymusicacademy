@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useAuthModal } from "@/app/context/AuthModalContext";
+import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
 
 const slides = [
     { src: "/images/hero1.jpg", alt: "Barry playing bass on stage", position: "center center" },
@@ -21,9 +23,7 @@ export default function HeroSection() {
     }, []);
 
     return (
-        <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center  py-10 overflow-hidden">
-
-            {/* All images stacked — only the active one is visible */}
+        <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center py-10 overflow-hidden">
             {slides.map((slide, index) => (
                 <div
                     key={slide.src}
@@ -42,40 +42,43 @@ export default function HeroSection() {
                 </div>
             ))}
 
-            {/* Dark overlay — sits above all images */}
             <div className="absolute inset-0 bg-ebony/80 z-10" />
 
-            {/* Content */}
-            <div className="relative z-20 max-w-4xl mx-auto px-4 text-center">
-                <p className="font-mono text-maple text-xs tracking-[0.2em] uppercase mb-4">
+            {/* Animated content */}
+            <motion.div
+                className="relative z-20 max-w-4xl mx-auto px-4 text-center"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+            >
+                <motion.p variants={staggerItem} className="font-mono text-maple text-xs tracking-[0.2em] uppercase mb-4">
                     Bassist Barry Music Academy
-                </p>
-                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-parchment leading-tight mb-6">
+                </motion.p>
+                <motion.h1 variants={staggerItem} className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-parchment leading-tight mb-6">
                     Learn Bass From{" "}
                     <span className="text-maple">The Ground Up</span>
-                </h1>
-                <p className="text-parchment/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                </motion.h1>
+                <motion.p variants={staggerItem} className="text-parchment/80 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
                     Whether you're picking up a bass for the first time or ready to go
                     professional, Bassist Barry Music Academy gives you the skills,
                     structure, and support to get there.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                </motion.p>
+                <motion.div variants={staggerItem} className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                         onClick={() => openModal("signup")}
                         className="bg-maple text-ebony font-medium px-8 py-3 rounded-lg hover:bg-maple/90 transition text-lg w-full sm:w-auto"
                     >
                         Start Learning Today
                     </button>
-                    <a
-                        href="/courses"
+                    
+                    <a   href="/courses"
                         className="border border-parchment/40 text-parchment px-8 py-3 rounded-lg hover:border-maple hover:text-maple transition text-lg w-full sm:w-auto text-center"
                     >
                         View Courses
                     </a>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
 
-            {/* Slide indicators */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
                 {slides.map((_, index) => (
                     <button
@@ -91,7 +94,6 @@ export default function HeroSection() {
                 ))}
             </div>
 
-            {/* Fretboard divider bottom */}
             <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center">
                 <div className="flex-1 h-px bg-brass/30" />
                 {[0, 1, 2, 3, 4].map((i) => (
