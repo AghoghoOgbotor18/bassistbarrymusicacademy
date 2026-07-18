@@ -109,7 +109,7 @@ export default function IntroVideo() {
                             <video
                                 ref={videoRef}
                                 src={CLOUDINARY_VIDEO_URL}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                                 muted
                                 playsInline
                                 preload="metadata"
