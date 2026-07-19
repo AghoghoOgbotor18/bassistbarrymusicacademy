@@ -1,5 +1,5 @@
 "use client";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuthModal } from "../context/AuthModalContext";
 import { useReducer, useState, useEffect } from "react";
 import { createClient } from "../lib/supabase";
@@ -15,10 +15,7 @@ const initialState = {
 function formReducer(state, action){
     switch(action.type){
         case "update_field":
-            return{
-                ...state,
-                [action.field]: action.value,
-            };
+            return{ ...state, [action.field]: action.value };
         case "reset": 
             return initialState;
         default: 
@@ -33,16 +30,23 @@ export default function AuthModal() {
     const [formData, dispatch] = useReducer(formReducer, initialState);
     const [loading, setLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const router = useRouter();
     const supabase = createClient();
 
-    // auto-dismiss success message after 4 seconds
     useEffect(() => {
         if (!successMessage) return;
         const timer = setTimeout(() => setSuccessMessage(null), 4000);
         return () => clearTimeout(timer);
     }, [successMessage]);
+
+    // reset visibility when switching modes
+    useEffect(() => {
+        setShowPassword(false);
+        setShowConfirmPassword(false);
+    }, [mode]);
 
     const requiredFields = mode === "signup"
         ? ["name", "email", "password", "confirmPassword"]
@@ -65,12 +69,7 @@ export default function AuthModal() {
     if (!open) return null;
 
     const handleChange = (e) => {
-        dispatch({
-            type: "update_field",
-            field: e.target.name,
-            value: e.target.value
-        });
-        // clear error as soon as user starts correcting
+        dispatch({ type: "update_field", field: e.target.name, value: e.target.value });
         if (error) setError(null);
     };
 
@@ -97,10 +96,7 @@ export default function AuthModal() {
                     email: formData.email,
                     password: formData.password,
                 });
-                if (error){
-                    throw new Error("Invalid email/password");
-                    console.log(error);
-                } ;
+                if (error) throw new Error("Invalid email/password");
                 closeModal();
                 dispatch({ type: "reset" });
                 router.refresh();
@@ -119,9 +115,7 @@ export default function AuthModal() {
                 const { error } = await supabase.auth.signUp({
                     email: formData.email,
                     password: formData.password,
-                    options: {
-                        data: { full_name: formData.name },
-                    },
+                    options: { data: { full_name: formData.name } },
                 });
                 if (error) throw error;
                 setSuccessMessage("Account created! Check your email to confirm before logging in.");
@@ -158,10 +152,7 @@ export default function AuthModal() {
                 className="bg-parchment rounded-xl max-w-sm w-full p-6 relative"
                 onClick={(e) => e.stopPropagation()}
             >
-                <button
-                    onClick={handleClose}
-                    className="absolute top-3 right-3 text-ebony/60 hover:text-ebony"
-                >
+                <button onClick={handleClose} className="absolute top-3 right-3 text-ebony/60 hover:text-ebony">
                     <FaTimes />
                 </button>
 
@@ -177,7 +168,6 @@ export default function AuthModal() {
                     </p>
                 )}
 
-                {/* Success message */}
                 {successMessage && (
                     <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3 text-green-800 text-sm">
                         {successMessage}
@@ -221,20 +211,30 @@ export default function AuthModal() {
 
                     {(mode === "login" || mode === "signup") && (
                         <div>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="Password"
-                                required
-                                className="w-full border border-brass/30 rounded-lg px-3 py-2 placeholder:text-black/30"
-                            />
+                            {/* Password with eye toggle */}
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Password"
+                                    required
+                                    className="w-full border border-brass/30 rounded-lg px-3 py-2 pr-10 placeholder:text-black/30"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ebony/40 hover:text-ebony transition"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+                                </button>
+                            </div>
                             {isFieldEmpty("password") && (
                                 <p className="text-red-600 text-sm mt-1">Password is required</p>
                             )}
-    
                             {mode === "login" && (
                                 <div className="text-right mt-1">
                                     <button
@@ -251,16 +251,27 @@ export default function AuthModal() {
 
                     {mode === "signup" && (
                         <div>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                placeholder="Confirm Password"
-                                required
-                                className="w-full border border-brass/30 rounded-lg px-3 py-2 placeholder:text-black/30"
-                            />
+                            {/* Confirm password with eye toggle */}
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    placeholder="Confirm Password"
+                                    required
+                                    className="w-full border border-brass/30 rounded-lg px-3 py-2 pr-10 placeholder:text-black/30"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-ebony/40 hover:text-ebony transition"
+                                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showConfirmPassword ? <FaEyeSlash className="text-sm" /> : <FaEye className="text-sm" />}
+                                </button>
+                            </div>
                             {isFieldEmpty("confirmPassword") && (
                                 <p className="text-red-600 text-sm mt-1">Please confirm your password</p>
                             )}
@@ -294,10 +305,7 @@ export default function AuthModal() {
                     {mode === "login" && (
                         <>
                             Don't have an account?{" "}
-                            <button
-                                onClick={() => switchMode("signup")}
-                                className="text-maple font-medium hover:underline"
-                            >
+                            <button onClick={() => switchMode("signup")} className="text-maple font-medium hover:underline">
                                 Sign up
                             </button>
                         </>
@@ -305,10 +313,7 @@ export default function AuthModal() {
                     {mode === "signup" && (
                         <>
                             Already have an account?{" "}
-                            <button
-                                onClick={() => switchMode("login")}
-                                className="text-maple font-medium hover:underline"
-                            >
+                            <button onClick={() => switchMode("login")} className="text-maple font-medium hover:underline">
                                 Log in
                             </button>
                         </>
@@ -316,10 +321,7 @@ export default function AuthModal() {
                     {mode === "forgot" && (
                         <>
                             Remember your password?{" "}
-                            <button
-                                onClick={() => switchMode("login")}
-                                className="text-maple font-medium hover:underline"
-                            >
+                            <button onClick={() => switchMode("login")} className="text-maple font-medium hover:underline">
                                 Back to login
                             </button>
                         </>
