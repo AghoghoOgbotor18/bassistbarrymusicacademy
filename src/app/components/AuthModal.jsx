@@ -118,8 +118,9 @@ export default function AuthModal() {
                     options: { data: { full_name: formData.name } },
                 });
                 if (error) throw error;
-                setSuccessMessage("Account created! Check your email to confirm before logging in.");
+                setSuccessMessage("Account created successfully! Please Log in.");
                 dispatch({ type: "reset" });
+                setMode("login");
             }
         } catch (err) {
             setError(err.message);
