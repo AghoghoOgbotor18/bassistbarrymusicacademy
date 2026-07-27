@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { useAuthModal } from "../../context/AuthModalContext";
 import { createClient } from "../../lib/supabase";
-import { FaCheck, FaStar, FaSpinner, FaTimes } from "react-icons/fa";
-import ErrorModal from "../../components/ErrorModal"
+import { FaCheck, FaStar, FaSpinner } from "react-icons/fa";
+import ErrorModal from "../../components/ErrorModal";
+import { motion } from "framer-motion";
+import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
 
 const tiers = [
     {
@@ -83,32 +85,18 @@ export default function CoursesTiers() {
 
     const handleEnroll = async (tierSlug) => {
         setErrorMessage(null);
-
-        // check if user is logged in first
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            openModal("signup");
-            return;
-        }
-
+        if (!user) { openModal("signup"); return; }
         setLoadingTier(tierSlug);
-
         try {
             const response = await fetch("/api/paystack/initialize", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tierSlug }),
             });
-
             const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to initialize payment");
-            }
-
-            // redirect to Paystack checkout
+            if (!response.ok) throw new Error(data.error || "Failed to initialize payment");
             window.location.href = data.authorization_url;
-
         } catch (err) {
             setErrorMessage(err.message);
             setLoadingTier(null);
@@ -117,18 +105,20 @@ export default function CoursesTiers() {
 
     return (
         <section className="bg-ebony py-24 px-4">
-            {/* Error modal */}
-            <ErrorModal
-                message={errorMessage}
-                onClose={() => setErrorMessage(null)}
-            />
+            <ErrorModal message={errorMessage} onClose={() => setErrorMessage(null)} />
 
             <div className="max-w-6xl mx-auto -mt-15">
-
-                <div className="flex flex-col gap-8">
+                <motion.div
+                    className="flex flex-col gap-8"
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.05 }}
+                >
                     {tiers.map((tier, i) => (
-                        <div
+                        <motion.div
                             key={i}
+                            variants={staggerItem}
                             id={tier.id}
                             className={`relative rounded-2xl border-2 ${tier.accentColor} bg-white/5 overflow-hidden`}
                         >
@@ -139,95 +129,58 @@ export default function CoursesTiers() {
                                     <FaStar className="text-xs" />
                                 </div>
                             )}
-
                             <div className="p-8 md:p-10 grid md:grid-cols-3 gap-8">
-                                {/* Left — tier info */}
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-3 flex-wrap">
-                                        <span className={`font-mono text-xs px-3 py-1 rounded-full ${tier.tagColor}`}>
-                                            {tier.tag}
-                                        </span>
+                                        <span className={`font-mono text-xs px-3 py-1 rounded-full ${tier.tagColor}`}>{tier.tag}</span>
                                     </div>
-
-                                    <h3 className="font-display text-3xl font-bold text-parchment">
-                                        {tier.level}
-                                    </h3>
-
-                                    <p className="text-parchment/55 text-sm leading-relaxed">
-                                        {tier.description}
-                                    </p>
-
+                                    <h3 className="font-display text-3xl font-bold text-parchment">{tier.level}</h3>
+                                    <p className="text-parchment/55 text-sm leading-relaxed">{tier.description}</p>
                                     <div className="mt-auto">
-                                        <p className="font-display text-4xl font-bold text-parchment">
-                                            {tier.price}
-                                        </p>
-                                        <p className="text-parchment/40 text-xs font-mono mt-1">
-                                            One-time payment · {tier.duration} curriculum
-                                        </p>
+                                        <p className="font-display text-4xl font-bold text-parchment">{tier.price}</p>
+                                        <p className="text-parchment/40 text-xs font-mono mt-1">One-time payment · {tier.duration} curriculum</p>
                                     </div>
-
                                     <button
                                         onClick={() => handleEnroll(tier.id)}
                                         disabled={loadingTier === tier.id}
                                         className={`mt-2 py-3 px-6 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${tier.buttonStyle}`}
                                     >
                                         {loadingTier === tier.id ? (
-                                            <>
-                                                <FaSpinner className="animate-spin text-sm" />
-                                                Redirecting...
-                                            </>
-                                        ) : (
-                                            `Enroll in ${tier.level}`
-                                        )}
+                                            <><FaSpinner className="animate-spin text-sm" />Redirecting...</>
+                                        ) : (`Enroll in ${tier.level}`)}
                                     </button>
                                 </div>
-
-                                {/* Middle — what you get */}
                                 <div>
-                                    <p className="font-mono text-xs tracking-widest uppercase text-parchment/40 mb-4">
-                                        What's Included
-                                    </p>
+                                    <p className="font-mono text-xs tracking-widest uppercase text-parchment/40 mb-4">What's Included</p>
                                     <ul className="flex flex-col gap-3">
                                         {tier.whatYouGet.map((item, j) => (
                                             <li key={j} className="flex items-start gap-3">
                                                 <FaCheck className="text-maple text-xs mt-1 flex-shrink-0" />
-                                                <span className="text-parchment/70 text-sm leading-snug">
-                                                    {item}
-                                                </span>
+                                                <span className="text-parchment/70 text-sm leading-snug">{item}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-
-                                {/* Right — outcome cards */}
                                 <div className="flex flex-col justify-between gap-6">
                                     <div className="bg-white/5 border border-parchment/10 rounded-xl p-6 flex flex-col gap-3">
-                                        <p className="font-mono text-xs tracking-widest uppercase text-parchment/40">
-                                            Your Outcome
-                                        </p>
-                                        <p className="text-parchment/75 text-sm leading-relaxed">
-                                            {tier.outcome}
-                                        </p>
+                                        <p className="font-mono text-xs tracking-widest uppercase text-parchment/40">Your Outcome</p>
+                                        <p className="text-parchment/75 text-sm leading-relaxed">{tier.outcome}</p>
                                     </div>
-
                                     <div className="bg-white/5 border border-parchment/10 rounded-xl p-6 flex flex-col gap-3">
-                                        <p className="font-mono text-xs tracking-widest uppercase text-parchment/40">
-                                            Delivered To You
-                                        </p>
+                                        <p className="font-mono text-xs tracking-widest uppercase text-parchment/40">Delivered To You</p>
                                         <ul className="flex flex-col gap-2">
                                             {["Ebook via email", "Dashboard video access", "Lifetime access"].map((d, k) => (
                                                 <li key={k} className="flex items-center gap-2 text-parchment/60 text-sm">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-maple flex-shrink-0" />
-                                                    {d}
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-maple flex-shrink-0" />{d}
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </section>
     );
