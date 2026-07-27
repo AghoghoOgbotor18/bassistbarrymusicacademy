@@ -123,17 +123,7 @@ export default function CoursesTiers() {
                 onClose={() => setErrorMessage(null)}
             />
 
-            <div className="max-w-6xl mx-auto">
-                <p className="font-mono text-maple text-sm tracking-[0.2em] uppercase text-center mb-3">
-                    The Three Tiers
-                </p>
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-parchment text-center mb-4">
-                    Choose Your Path
-                </h2>
-                <p className="text-parchment/50 text-center max-w-xl mx-auto mb-16 leading-relaxed">
-                    Not sure which tier fits you? Start with Beginner, you can
-                    always level up. Every tier builds on the last.
-                </p>
+            <div className="max-w-6xl mx-auto -mt-15">
 
                 <div className="flex flex-col gap-8">
                     {tiers.map((tier, i) => (

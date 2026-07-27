@@ -1,8 +1,9 @@
 import { FaArrowDown } from "react-icons/fa";
+import CoursesTiers from "./CoursesTiers";
 
 export default function CoursesHero() {
     return (
-        <section className="relative bg-ebony pt-32 pb-24 px-4 overflow-hidden">
+        <section className="relative bg-ebony pt-62 pb-4 px-4 overflow-hidden">
             {/* Decorative background rings */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full border border-maple/10 translate-x-1/2 -translate-y-1/2" />
             <div className="absolute top-0 right-0 w-[350px] h-[350px] rounded-full border border-maple/10 translate-x-1/2 -translate-y-1/2" />
@@ -31,6 +32,10 @@ export default function CoursesHero() {
                         Three carefully structured tiers designed to take you from your
                         very first note all the way to commanding any stage or studio.
                         Pick where you are — we'll take you where you want to be.
+                    </p>
+
+                    <p className="text-parchment/60 text-lg md:text-xl leading-relaxed max-w-2xl mt-8">
+                        Choose your path with our three tier. Not sure which tier fits you? Start with Beginner, you can always level up. Every tier builds on the last.
                     </p>
 
                     {/* Tier quick pills */}
@@ -62,6 +67,7 @@ export default function CoursesHero() {
                     </p>
                 </div>
             </div>
+            <CoursesTiers />
 
             {/* Bottom fretboard */}
             <div className="absolute bottom-0 left-0 right-0 flex items-center">

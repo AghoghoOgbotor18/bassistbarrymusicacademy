@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image";
 import Link from "next/link";
-import { FaMusic, FaChalkboardTeacher, FaGuitar } from "react-icons/fa";
+import { FaMusic, FaChalkboardTeacher, FaGuitar, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
 
@@ -29,8 +29,7 @@ export default function MeetBarry() {
                     </h2>
                 </motion.div>
 
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    {/* Image — slides in from left */}
+                <div className="grid md:grid-cols-2 gap-12 items-center p-4">
                     <motion.div
                         className="relative"
                         initial={{ opacity: 0, x: -50 }}
@@ -48,7 +47,7 @@ export default function MeetBarry() {
                             />
                             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-ebony/60 to-transparent" />
                         </div>
-                        <div className="absolute -bottom-5 -right-4 bg-ebony text-parchment px-5 py-3 rounded-xl shadow-lg border border-brass/30">
+                        <div className="absolute -bottom-5 -right-3 bg-ebony text-parchment px-5 py-3 rounded-xl shadow-lg border border-brass/30">
                             <p className="font-display text-2xl font-bold text-maple">10+</p>
                             <p className="text-xs text-parchment/70">Years of Experience</p>
                         </div>
@@ -103,8 +102,8 @@ export default function MeetBarry() {
                         </motion.div>
 
                         <div className="flex items-center gap-4">
-                            <Link href="/about" className="bg-ebony text-parchment font-medium px-6 py-3 rounded-lg hover:bg-rosewood transition">
-                                Full Story →
+                            <Link href="/about" className="bg-ebony text-parchment font-medium px-6 py-3 rounded-lg hover:bg-rosewood transition flex gap-1.5 items-center">
+                                Full Story <FaArrowRight />
                             </Link>
                             <Link href="/courses" className="text-maple font-medium hover:underline">
                                 View Courses

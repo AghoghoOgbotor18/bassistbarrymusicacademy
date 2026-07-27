@@ -110,11 +110,7 @@ export default function CoursesPreview() {
                             </div>
                             <Link
                                 href="/courses"
-                                className={`mt-2 text-center py-3 rounded-lg font-medium transition text-sm ${
-                                    tier.popular
-                                        ? "bg-maple text-ebony hover:bg-maple/90"
-                                        : "border border-parchment/20 text-parchment hover:border-maple hover:text-maple"
-                                }`}
+                                className={`mt-2 text-center py-3 rounded-lg font-medium transition text-sm bg-maple text-ebony hover:bg-maple/90`}
                             >
                                 Get Started
                             </Link>

@@ -15,7 +15,6 @@ export default function CoursesPage() {
         <>
             <CoursesHero />
             <CoursesOverview />
-            <CoursesTiers />
             <CoursesProcess />
             <CoursesFAQ />
             <CoursesCTA />
