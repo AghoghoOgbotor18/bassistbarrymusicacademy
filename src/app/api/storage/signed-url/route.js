@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
-        // verify user is logged in
         const supabase = await createServerSupabaseClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -19,12 +18,11 @@ export async function GET(request) {
             return NextResponse.json({ error: "Path required" }, { status: 400 });
         }
 
-        // generate signed URL using admin client
         const adminSupabase = createAdminClient();
         const { data, error } = await adminSupabase
             .storage
             .from("ebook")
-            .createSignedUrl(path, 60 * 60 * 2); // 2 hours for dashboard access
+            .createSignedUrl(path, 60 * 60 * 2);
 
         if (error || !data?.signedUrl) {
             console.error("Signed URL error:", error);
@@ -34,7 +32,7 @@ export async function GET(request) {
         return NextResponse.json({ url: data.signedUrl });
 
     } catch (err) {
-        console.error("Signed URL route error:", err);
+        console.error("Signed URL route error:", err.message);
         return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
     }
 }

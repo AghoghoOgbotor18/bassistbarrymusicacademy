@@ -59,12 +59,15 @@ export default function DashboardPage() {
                     (materialsData || []).map(async (material) => {
                         if (material.type === "ebook" && material.storage_path) {
                             try {
+                                console.log("Fetching signed URL for:", material.storage_path);
                                 const response = await fetch(
                                     `/api/storage/signed-url?path=${encodeURIComponent(material.storage_path)}`
                                 );
                                 const data = await response.json();
+                                console.log("Signed URL response:", data);
                                 return { ...material, signedUrl: data.url };
-                            } catch {
+                            } catch (err) {
+                                console.error("Signed URL fetch failed:", err.message);
                                 return material;
                             }
                         }

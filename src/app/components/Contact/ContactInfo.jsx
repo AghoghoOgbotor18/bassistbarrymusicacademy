@@ -4,7 +4,7 @@ const contactDetails = [
     {
         icon: <FaEnvelope className="text-maple text-lg" />,
         label: "Email Us",
-        value: "hello@bassistbarry.com",
+        value: "fortunebaridoge003@gmail.com",
         sub: "We'll reply within 24–48 hours",
         href: "mailto:hello@bassistbarry.com",
     },
