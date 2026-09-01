@@ -8,13 +8,14 @@ function getYouTubeId(url) {
     return match ? match[1] : "";
 }
 
-export default function MaterialCard({ material }) {
-    const [playing, setPlaying] = useState(false);
+export default function MaterialCard({ material, activeVideoId, setActiveVideoId }) {
     const [thumbError, setThumbError] = useState(false);
+
+    // this card is playing if it's the active one
+    const playing = activeVideoId === material.id;
 
     if (material.type === "video") {
 
-        // advanced one-on-one — no URL
         if (!material.url) {
             return (
                 <div className="bg-white border border-brass/15 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
@@ -67,26 +68,19 @@ export default function MaterialCard({ material }) {
                     </div>
                 ) : (
                     <button
-                        onClick={() => setPlaying(true)}
+                        onClick={() => setActiveVideoId(material.id)}
                         className="relative w-full aspect-video bg-ebony flex items-center justify-center group cursor-pointer overflow-hidden"
                     >
-                        {/* YouTube thumbnail */}
                         <img
                             src={thumbnail}
                             alt={material.title}
                             className="absolute inset-0 w-full h-full object-cover"
                             onError={() => setThumbError(true)}
                         />
-
-                        {/* Dark overlay */}
                         <div className="absolute inset-0 bg-ebony/50 group-hover:bg-ebony/40 transition-colors duration-200" />
-
-                        {/* Play button */}
                         <div className="w-14 h-14 rounded-full bg-maple flex items-center justify-center group-hover:scale-110 transition-transform duration-200 z-10 shadow-lg">
                             <FaPlay className="text-ebony text-lg ml-1" />
                         </div>
-
-                        {/* Title overlay at bottom */}
                         <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-gradient-to-t from-ebony/90 to-transparent z-10">
                             <p className="text-parchment text-sm font-medium leading-snug line-clamp-1">
                                 {material.title}
@@ -97,7 +91,6 @@ export default function MaterialCard({ material }) {
                         </div>
                     </button>
                 )}
-
                 <div className="p-4 flex flex-col gap-1 flex-1">
                     <span className="font-mono text-xs text-maple tracking-widest uppercase">
                         Video Lesson

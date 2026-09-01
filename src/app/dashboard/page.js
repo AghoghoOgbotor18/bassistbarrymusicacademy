@@ -22,6 +22,7 @@ export default function DashboardPage() {
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
+    const [activeVideoId, setActiveVideoId] = useState(null);
 
 
     useEffect(() => {
@@ -194,7 +195,12 @@ export default function DashboardPage() {
                         </div>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                             {freeMaterials.map((material) => (
-                                <MaterialCard key={material.id} material={material} />
+                                <MaterialCard 
+                                    key={material.id} 
+                                    material={material}
+                                    activeVideoId={activeVideoId}
+                                    setActiveVideoId={setActiveVideoId}
+                                />
                             ))}
                         </div>
                     </div>
@@ -218,7 +224,12 @@ export default function DashboardPage() {
                         paidMaterials.length > 0 ? (
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                                 {paidMaterials.map((material) => (
-                                    <MaterialCard key={material.id} material={material} />
+                                    <MaterialCard 
+                                        key={material.id} 
+                                        material={material}
+                                        activeVideoId={activeVideoId}
+                                        setActiveVideoId={setActiveVideoId} 
+                                    />
                                 ))}
                             </div>
                         ) : (

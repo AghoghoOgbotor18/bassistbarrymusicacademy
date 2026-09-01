@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/app/lib/supabase.admin";
 import { NextResponse } from "next/server";
+import { sendBarryNotification } from "@/app/lib/sendBarryNotification";
 
 export async function GET(request) {
     try {
@@ -92,6 +93,7 @@ export async function GET(request) {
         return NextResponse.redirect(
             new URL("/dashboard?payment=success", request.url)
         );
+
 
     } catch (error) {
         console.error("Payment verification error:", error);

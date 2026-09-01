@@ -2,6 +2,7 @@ import { createAdminClient } from "@/app/lib/supabase.admin";
 import { sendEbookEmail } from "@/app/lib/sendEbookEmail";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { sendBarryNotification } from "@/app/lib/sendBarryNotification";
 
 export async function POST(request) {
     try {
@@ -118,10 +119,19 @@ export async function POST(request) {
                     tierId: parseInt(tierId),
                     tierName,
                 });
-                console.log("sendEbookEmail Completed")
+                console.log("sendEbookEmail Completed");
+
             } catch(emailErr){
                 console.error("sendEbookEmail threw:", emailErr.message, emailErr.stack);
             }
+
+            // after enrollment is created and ebook email is sent:
+            sendBarryNotification({
+                studentName: profile?.full_name,
+                studentEmail: userEmail,
+                tierName,
+                enrolledAt: new Date().toISOString(),
+            }).catch(console.error);
 
             console.log("Webhook: enrollment created for user:", userId);
         }
