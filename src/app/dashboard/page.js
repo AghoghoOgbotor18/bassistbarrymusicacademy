@@ -13,6 +13,7 @@ import PaymentBanner from "../components/DashboardContent/PaymentBanner"
 import MaterialCard from "../components/DashboardContent/MaterialCard"
 import LockedCard from "../components/DashboardContent/LockedCard"
 import Link from "next/link";
+import UpgradeCTA from "../components/DashboardContent/UpgradeCTA";
 
 
 
@@ -182,6 +183,11 @@ export default function DashboardPage() {
                     )}
                 </div>
 
+                {/* Upgrade CTA — only for beginner and intermediate */}
+                {enrollment && enrollment.tiers?.rank < 3 && (
+                    <UpgradeCTA currentTier={enrollment.tiers} />
+                )}
+
                 {/* Free materials */}
                 {freeMaterials.length > 0 && (
                     <div className="mb-12">
@@ -268,6 +274,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     )}
+                    
                 </div>
             </div>
         </div>

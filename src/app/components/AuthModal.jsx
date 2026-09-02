@@ -108,9 +108,13 @@ export default function AuthModal() {
                     { redirectTo: `${window.location.origin}/auth/reset-password` }
                 );
                 if (error) throw error;
-                setSuccessMessage("Password reset link sent! Check your email.");
+                setSuccessMessage("Reset link sent! Check your email then log in.");
                 dispatch({ type: "reset" });
-
+                setTouched({}); // clear touched so no "required" errors show
+                // auto switch to login after 2.5 seconds
+                setTimeout(() => {
+                    switchMode("login");
+                }, 2500);
             } else {
                 const { error } = await supabase.auth.signUp({
                     email: formData.email,

@@ -96,7 +96,7 @@ export default function Footer() {
                         © {new Date().getFullYear()} Bassist Barry Music Academy. All rights reserved.
                     </p>
                     <p className="text-parchment/20 text-xs">
-                        Built with ♪ in Nigeria
+                        Developed by <a href="https://wa.me/2348168973060" target="_blank">CyberTech</a>
                     </p>
                 </div>
             </div>

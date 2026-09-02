@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/app/lib/supabase.admin";
-import { NextResponse } from "next/server";
+import { sendEbookEmail } from "@/app/lib/sendEbookEmail";
 import { sendBarryNotification } from "@/app/lib/sendBarryNotification";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
     try {
@@ -13,7 +14,7 @@ export async function GET(request) {
             );
         }
 
-        // 1. verify the transaction with Paystack server-side
+        // 1. verify with Paystack server-side
         const paystackResponse = await fetch(
             `https://api.paystack.co/transaction/verify/${reference}`,
             {
@@ -24,15 +25,10 @@ export async function GET(request) {
         );
 
         const paystackData = await paystackResponse.json();
-
-        // use admin client for ALL db operations — bypasses RLS
         const adminSupabase = createAdminClient();
 
-        // 2. check Paystack confirms it was successful
-        if (
-            !paystackData.status ||
-            paystackData.data.status !== "success"
-        ) {
+        // 2. check Paystack confirms success
+        if (!paystackData.status || paystackData.data.status !== "success") {
             await adminSupabase
                 .from("payments")
                 .update({ status: "failed" })
@@ -43,9 +39,12 @@ export async function GET(request) {
             );
         }
 
+        // extract all needed fields from Paystack response
         const metadata = paystackData.data.metadata;
         const userId = metadata.user_id;
         const tierId = metadata.tier_id;
+        const tierName = metadata.tier_name;
+        const userEmail = paystackData.data.customer?.email;
 
         // 3. replay attack check
         const { data: existingPayment } = await adminSupabase
@@ -89,11 +88,33 @@ export async function GET(request) {
             );
         }
 
-        // 6. redirect to dashboard
+        // 6. get student profile
+        const { data: profile } = await adminSupabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", userId)
+            .single();
+
+        // 7. send ebook email — non-blocking
+        sendEbookEmail({
+            email: userEmail,
+            fullName: profile?.full_name,
+            tierId: parseInt(tierId),
+            tierName,
+        }).catch(console.error);
+
+        // 8. notify Barry — non-blocking
+        sendBarryNotification({
+            studentName: profile?.full_name,
+            studentEmail: userEmail,
+            tierName,
+            enrolledAt: new Date().toISOString(),
+        }).catch(console.error);
+
+        // 9. redirect to dashboard
         return NextResponse.redirect(
             new URL("/dashboard?payment=success", request.url)
         );
-
 
     } catch (error) {
         console.error("Payment verification error:", error);
