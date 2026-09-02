@@ -30,7 +30,7 @@ export default function PaymentBanner() {
             icon: <FaCheckCircle className="text-green-500 text-5xl" />,
             title: "Payment Successful!",
             message:
-                "Your enrollment is confirmed and your ebook is on its way to your email. Please check your inbox or spam folder.",
+                "Your enrollment is confirmed and your ebook is on its way to your registered email. Please check your inbox or spam folder.",
         },
         failed: {
             icon: <FaTimesCircle className="text-red-500 text-5xl" />,
@@ -42,7 +42,7 @@ export default function PaymentBanner() {
             icon: <FaCheckCircle className="text-blue-500 text-5xl" />,
             title: "Already Enrolled",
             message:
-                "This payment has already been processed and your course content is available below.",
+                "This payment has already been processed and your course content is available here in your dashboard. Your ebook is also in your registered email. Please check your inbox or spam folder."
         },
     };
 
