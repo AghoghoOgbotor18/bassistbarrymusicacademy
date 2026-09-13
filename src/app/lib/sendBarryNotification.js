@@ -1,6 +1,11 @@
 import nodemailer from "nodemailer";
 
 export async function sendBarryNotification({ studentName, studentEmail, tierName, enrolledAt }) {
+    console.log("=== sendBarryNotification START ===", { studentName, studentEmail, tierName });
+    console.log("GMAIL_USER exists:", !!process.env.GMAIL_USER);
+    console.log("GMAIL_APP_PASSWORD exists:", !!process.env.GMAIL_APP_PASSWORD);
+    console.log("Sending to:", process.env.BARRY_NOTIFICATION_EMAIL || process.env.GMAIL_USER);
+
     try {
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -10,9 +15,9 @@ export async function sendBarryNotification({ studentName, studentEmail, tierNam
             },
         });
 
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
             from: `"BBMA Notifications" <${process.env.GMAIL_USER}>`,
-            to: process.env.GMAIL_USER, // sends to Barry's own Gmail
+            to: process.env.BARRY_NOTIFICATION_EMAIL || process.env.GMAIL_USER,
             subject: `🎸 New ${tierName} Enrollment — Action Required`,
             html: `
                 <!DOCTYPE html>
@@ -64,7 +69,7 @@ export async function sendBarryNotification({ studentName, studentEmail, tierNam
                             <div style="border:1px solid rgba(140,106,63,0.3);border-radius:12px;padding:16px;margin-top:16px;">
                                 <p style="color:#D9A246;font-size:12px;font-weight:bold;margin:0 0 8px 0;">📅 Next Step</p>
                                 <p style="color:rgba(237,224,204,0.7);font-size:13px;line-height:1.6;margin:0;">
-                                    Reach out to <a href="mailto:${studentEmail}" style="color:#D9A246;">${studentEmail}</a> 
+                                    Reach out to <a href="mailto:${studentEmail}" style="color:#D9A246;">${studentEmail}</a>
                                     to introduce yourself and agree on a date and time for the one-on-one session.
                                 </p>
                             </div>
@@ -85,8 +90,11 @@ export async function sendBarryNotification({ studentName, studentEmail, tierNam
             `,
         });
 
-        console.log("✅ Barry notification sent for:", tierName, studentEmail);
+        console.log("✅ Barry notification sent. MessageId:", info.messageId);
+        console.log("✅ Sent to:", process.env.BARRY_NOTIFICATION_EMAIL || process.env.GMAIL_USER);
+
     } catch (err) {
         console.error("Barry notification failed:", err.message);
+        console.error("Full error:", err);
     }
 }

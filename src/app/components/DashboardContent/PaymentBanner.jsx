@@ -42,7 +42,7 @@ export default function PaymentBanner() {
             icon: <FaCheckCircle className="text-blue-500 text-5xl" />,
             title: "Already Enrolled",
             message:
-                "This payment has already been processed and your course content is available here in your dashboard. Your ebook is also in your registered email. Please check your inbox or spam folder."
+                "This payment has been processed and your course content is available here in your dashboard and your email. Please check your inbox or spam folder."
         },
     };
 

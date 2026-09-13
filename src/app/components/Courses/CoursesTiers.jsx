@@ -142,12 +142,20 @@ export default function CoursesTiers() {
                                     </div>
                                     <button
                                         onClick={() => handleEnroll(tier.id)}
-                                        disabled={loadingTier === tier.id}
+                                        disabled={loadingTier !== null} // ← disable ALL when ANY is loading
                                         className={`mt-2 py-3 px-6 rounded-lg font-medium text-sm transition flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed ${tier.buttonStyle}`}
                                     >
                                         {loadingTier === tier.id ? (
-                                            <><FaSpinner className="animate-spin text-sm" />Redirecting...</>
-                                        ) : (`Enroll in ${tier.level}`)}
+                                            <>
+                                                <FaSpinner className="animate-spin text-sm" />
+                                                Redirecting...
+                                            </>
+                                        ) : loadingTier !== null ? (
+                                            // another tier is loading — show subtle disabled state
+                                            `Enroll in ${tier.level}`
+                                        ) : (
+                                            `Enroll in ${tier.level}`
+                                        )}
                                     </button>
                                 </div>
                                 <div>

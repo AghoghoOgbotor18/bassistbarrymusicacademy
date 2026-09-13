@@ -272,7 +272,7 @@ export default function DashboardPage() {
                     
                 </div>
                 {/* Upgrade CTA — only for beginner and intermediate */}
-                <div className="pt-10">
+                <div className="mt-10">
                     {enrollment && enrollment.tiers?.rank < 3 && (
                         <UpgradeCTA currentTier={enrollment.tiers} />
                     )}
