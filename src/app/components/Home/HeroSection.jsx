@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuthModal } from "@/app/context/AuthModalContext";
-import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
+import { staggerContainer, staggerItem } from "../ui/animations";
 
 const slides = [
     { src: "/images/hero1.jpg", alt: "Barry playing bass on stage", position: "center center" },

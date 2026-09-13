@@ -17,7 +17,7 @@ const tiers = [
             "Reading basic tablature",
             "Your first 5 grooves",
             "Beginner ebook + practice guide",
-            "1 free welcome video",
+            "2 exclusive video lessons",
         ],
     },
     {
@@ -33,7 +33,7 @@ const tiers = [
             "Slap & pop techniques",
             "Playing with a band context",
             "Intermediate ebook + exercises",
-            "Exclusive video lessons",
+            "3 Exclusive video lessons",
         ],
     },
     {
@@ -46,9 +46,9 @@ const tiers = [
             "Everything in Intermediate",
             "Advanced gospel bass techniques",
             "Studio session skills",
-            "Soloing & improvisation",
             "Advanced ebook + masterclasses",
-            "Full video library access",
+            "4 exclusive video lessons",
+            "private class with Bassist Barry",
         ],
     },
 ];
