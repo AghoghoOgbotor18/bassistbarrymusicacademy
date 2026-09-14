@@ -32,13 +32,9 @@ export default function CoursesHero() {
                             <span className="absolute -bottom-2 left-0 right-0 h-1 bg-linear-to-r from-maple to-brass rounded-full" />
                         </span>
                     </motion.h1>
+                    
                     <motion.p variants={staggerItem} className="text-parchment/60 text-lg md:text-xl leading-relaxed max-w-2xl mt-8">
-                        Three carefully structured tiers designed to take you from your
-                        very first note all the way to commanding any stage or studio.
-                        Pick where you are — we'll take you where you want to be.
-                    </motion.p>
-                    <motion.p variants={staggerItem} className="text-parchment/60 text-lg md:text-xl leading-relaxed max-w-2xl mt-8">
-                        Choose your path with our three tier. Not sure which tier fits you? Start with Beginner, you can always level up. Every tier builds on the last.
+                        Choose the level that fits your goals. Start as a beginner, build your skills, and progress through every stage of your musical journey.
                     </motion.p>
 
                     <motion.div variants={staggerItem} className="flex flex-wrap gap-3 mt-10">
