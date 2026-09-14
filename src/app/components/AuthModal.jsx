@@ -124,6 +124,7 @@ export default function AuthModal() {
                 if (error) throw error;
                 setSuccessMessage("Account created successfully! Please Log in.");
                 dispatch({ type: "reset" });
+                setTouched({});
                 setMode("login");
             }
         } catch (err) {
