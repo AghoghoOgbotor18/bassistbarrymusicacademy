@@ -61,14 +61,23 @@ export default function ContactForm() {
         setError(null);
 
         try {
-            // Resend email integration will go here later
-            // For now we simulate a successful send
-            await new Promise((res) => setTimeout(res, 1500));
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to send message");
+            }
+
             setSuccess(true);
             dispatch({ type: "reset" });
             setTouched({});
         } catch (err) {
-            setError("Something went wrong. Please try again.");
+            setError(err.message);
         } finally {
             setLoading(false);
         }

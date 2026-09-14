@@ -1,12 +1,15 @@
-'use client'
-import Link from "next/link";
-import { FaCheck } from "react-icons/fa";
+"use client";
+import { FaCheck, FaCheckCircle, FaSpinner, FaTimes } from "react-icons/fa";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeUp, staggerContainer, staggerItem } from "../ui/animations";
+import { useAuthModal } from "@/app/context/AuthModalContext";
+import { createClient } from "@/app/lib/supabase";
 
 const tiers = [
     {
         level: "Beginner",
+        slug: "beginner",
         price: "₦7,000",
         description: "Perfect if you've never touched a bass before. Build a rock-solid foundation from day one.",
         color: "border-brass/40",
@@ -22,6 +25,7 @@ const tiers = [
     },
     {
         level: "Intermediate",
+        slug: "intermediate",
         price: "₦14,000",
         description: "You know the basics. Now it's time to develop your sound, speed, and musicality.",
         color: "border-maple",
@@ -38,6 +42,7 @@ const tiers = [
     },
     {
         level: "Advanced",
+        slug: "advanced",
         price: "₦50,000",
         description: "For serious players ready to go professional and command any stage or studio.",
         color: "border-rosewood/60",
@@ -48,12 +53,50 @@ const tiers = [
             "Studio session skills",
             "Advanced ebook + masterclasses",
             "4 exclusive video lessons",
-            "private class with Bassist Barry",
+            "Private class with Bassist Barry",
         ],
     },
 ];
 
 export default function CoursesPreview() {
+    const { openModal } = useAuthModal();
+    const [loadingTier, setLoadingTier] = useState(null);
+    const [error, setError] = useState(null);
+    const supabase = createClient();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleGetStarted = async (tierSlug) => {
+        setError(null);
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            openModal("signup");
+            return;
+        }
+
+        setLoadingTier(tierSlug);
+
+        try {
+            const response = await fetch("/api/paystack/initialize", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tierSlug }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to initialize payment");
+            }
+
+            window.location.href = data.authorization_url;
+        } catch (err) {
+            setError(err.message);
+            setLoadingTier(null);
+            setIsOpen(true);
+        }
+    };
+
     return (
         <section className="bg-ebony py-20 px-4">
             <div className="max-w-6xl mx-auto">
@@ -74,6 +117,28 @@ export default function CoursesPreview() {
                         to commanding any stage or studio in Nigeria and beyond.
                     </p>
                 </motion.div>
+
+                {isOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-ebony/30 backdrop-blur-sm px-4">
+                        <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl text-center flex flex-col justify-center items-center">
+                            <button
+                                        onClick={() => setIsOpen(false)}
+                                        className="absolute right-4 top-4 text-ebony/50 hover:text-ebony transition"
+                                        aria-label="Close modal"
+                                    >
+                                        <FaTimes className="text-lg" />
+                                    </button>
+                                    <FaCheckCircle className="text-blue-500 text-5xl" />
+                                    <p className="py-6">{error}</p>
+                                    <button
+                                        onClick={()  => setIsOpen(false)}
+                                        className="w-full rounded-xl bg-rosewood py-3 text-white font-medium hover:opacity-90 transition"
+                                    >
+                                        OK
+                                    </button>
+                                </div>
+                            </div>
+                )}
 
                 <motion.div
                     className="grid md:grid-cols-3 gap-6"
@@ -108,12 +173,17 @@ export default function CoursesPreview() {
                                     </div>
                                 ))}
                             </div>
-                            <Link
-                                href="/courses"
-                                className={`mt-2 text-center py-3 rounded-lg font-medium transition text-sm bg-maple text-ebony hover:bg-maple/90`}
+                            <button
+                                onClick={() => handleGetStarted(tier.slug)}
+                                disabled={loadingTier !== null}
+                                className="mt-2 text-center py-3 rounded-lg font-medium transition text-sm bg-maple text-ebony hover:bg-maple/90 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                             >
-                                Get Started
-                            </Link>
+                                {loadingTier === tier.slug ? (
+                                    <><FaSpinner className="animate-spin text-sm" />Redirecting...</>
+                                ) : (
+                                    "Get Started"
+                                )}
+                            </button>
                         </motion.div>
                     ))}
                 </motion.div>

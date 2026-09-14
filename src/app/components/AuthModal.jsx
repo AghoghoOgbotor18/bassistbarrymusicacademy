@@ -135,9 +135,10 @@ export default function AuthModal() {
 
     const switchMode = (nextMode) => {
         setMode(nextMode);
-        setTouched({});
+        setTouched({});  // clear touched to show no errors
         setError(null);
         setSuccessMessage(null);
+        dispatch({ type: "reset" }); // add this to clear form data
     };
 
     const handleClose = () => {

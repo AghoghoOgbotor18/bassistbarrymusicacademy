@@ -72,7 +72,7 @@ export async function POST(request) {
 
         if (existingEnrollment) {
             return NextResponse.json(
-                { error: "You are already enrolled in this course" },
+                { error: "You are already enrolled in this course. Check your dashboard for your materials" },
                 { status: 400 }
             );
         }
