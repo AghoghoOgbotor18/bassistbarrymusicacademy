@@ -35,10 +35,11 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
         // generate 24-hour signed URL from Supabase Storage
         const adminSupabase = createAdminClient();
 
+        // After — expires in 10 years (effectively permanent)
         const { data: signedUrlData, error: signedUrlError } = await adminSupabase
             .storage
             .from("ebook")
-            .createSignedUrl(ebook.path, 60 * 60 * 24);
+            .createSignedUrl(ebook.path, 60 * 60 * 24 * 365 * 10);
 
         if (signedUrlError || !signedUrlData?.signedUrl) {
             console.error("Signed URL error:", JSON.stringify(signedUrlError));
@@ -108,7 +109,7 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                                     ${ebook.name}
                                 </h3>
                                 <p style="color:rgba(237,224,204,0.5);font-size:12px;margin:0 0 24px 0;">
-                                    ${tierName} tier · Digital PDF · Link expires in 24 hours
+                                    ${tierName} tier · Digital PDF · Yours to keep
                                 </p>
                                 <a href="${signedUrlData.signedUrl}"
                                    style="background-color:#D9A246;color:#1B130D;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">
@@ -130,15 +131,6 @@ export async function sendEbookEmail({ email, fullName, tierId, tierName }) {
                                     Go to Dashboard →
                                 </a>
                             </div>
-
-                            <p style="color:#777;font-size:13px;line-height:1.7;margin:20px 0 8px 0;">
-                                The download link expires in 24 hours. If you need it
-                                again, visit your dashboard or
-                                <a href="${appUrl}/contact" style="color:#D9A246;text-decoration:none;">
-                                    contact us
-                                </a>
-                                and we'll resend it.
-                            </p>
 
                             <!-- Signature -->
                             <div style="margin-top:32px;padding-top:20px;border-top:1px solid rgba(140,106,63,0.15);">
