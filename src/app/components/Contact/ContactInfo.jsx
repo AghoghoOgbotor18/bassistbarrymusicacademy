@@ -36,14 +36,14 @@ const socials = [
         icon: <FaInstagram className="text-lg" />,
         label: "Instagram",
         handle: "@bassistbarry",
-        href: "#",
+        href: "https://www.instagram.com/bassistbarry/",
         color: "hover:text-pink-500",
     },
     {
         icon: <FaFacebook className="text-lg" />,
         label: "Facebook",
         handle: "Bassist Barry",
-        href: "#",
+        href: "https://www.facebook.com/bassistbarry",
         color: "hover:text-blue-500",
     },
     {

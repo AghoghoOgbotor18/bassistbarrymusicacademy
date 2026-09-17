@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { FaInstagram, FaYoutube, FaFacebook, FaWhatsapp } from "react-icons/fa";
+import { useAuthModal } from "../context/AuthModalContext";
 
 const footerLinks = [
     {
@@ -17,27 +20,27 @@ const footerLinks = [
             { label: "Beginner", href: "/courses#beginner" },
             { label: "Intermediate", href: "/courses#intermediate" },
             { label: "Advanced", href: "/courses#advanced" },
-            { label: "Dashboard", href: "/dashboard" },
+            { label: "Dashboard" },
         ],
     },
     {
         heading: "Legal",
         links: [
             { label: "Privacy Policy", href: "/privacy" },
-            { label: "Terms of Service", href: "/terms" },
-            { label: "Refund Policy", href: "/refund" },
+            { label: "Refund Policy", href: "/contact" },
         ],
     },
 ];
 
 const socials = [
-    { icon: <FaInstagram />, href: "#", label: "Instagram" },
-    { icon: <FaYoutube />, href: "#", label: "YouTube" },
-    { icon: <FaFacebook />, href: "#", label: "Facebook" },
-    { icon: <FaWhatsapp />, href: "#", label: "WhatsApp" },
+    { icon: <FaInstagram />, href: "https://www.instagram.com/bassistbarry/", label: "Instagram" },
+    { icon: <FaFacebook />, href: "https://www.facebook.com/bassistbarry", label: "Facebook" },
+    { icon: <FaWhatsapp />, href: "https://wa.me/2349077268160", label: "WhatsApp" },
 ];
 
 export default function Footer() {
+    const { openModal } = useAuthModal();
+
     return (
         <footer className="bg-ebony border-t border-brass/20">
             {/* Main footer */}
@@ -45,13 +48,18 @@ export default function Footer() {
 
                 {/* Brand column */}
                 <div className="flex flex-col gap-4">
-                    <Link href="/" className="font-display text-2xl font-bold text-parchment">
+                    <Link
+                        href="/"
+                        className="font-display text-2xl font-bold text-parchment"
+                    >
                         BBMA
                     </Link>
+
                     <p className="text-parchment/50 text-sm leading-relaxed">
                         Bassist Barry Music Academy — structured bass guitar training
                         for beginners to professionals across Nigeria.
                     </p>
+
                     {/* Socials */}
                     <div className="flex items-center gap-3 mt-2">
                         {socials.map((social, i) => (
@@ -73,15 +81,26 @@ export default function Footer() {
                         <p className="font-mono text-xs text-brass tracking-[0.15em] uppercase">
                             {col.heading}
                         </p>
+
                         <ul className="flex flex-col gap-2">
                             {col.links.map((link, j) => (
                                 <li key={j}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-parchment/50 text-sm hover:text-maple transition"
-                                    >
-                                        {link.label}
-                                    </Link>
+                                    {link.label === "Dashboard" ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => openModal("login")}
+                                            className="text-parchment/50 text-sm hover:text-maple transition"
+                                        >
+                                            {link.label}
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={link.href}
+                                            className="text-parchment/50 text-sm hover:text-maple transition"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -95,8 +114,17 @@ export default function Footer() {
                     <p className="text-parchment/30 text-xs">
                         © {new Date().getFullYear()} Bassist Barry Music Academy. All rights reserved.
                     </p>
+
                     <p className="text-parchment/20 text-xs">
-                        Developed by <a href="https://wa.me/2348168973060" target="_blank">CyberTech</a>
+                        Developed by{" "}
+                        <a
+                            href="https://wa.me/2348168973060"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-maple"
+                        >
+                            CyberQuest
+                        </a>
                     </p>
                 </div>
             </div>
