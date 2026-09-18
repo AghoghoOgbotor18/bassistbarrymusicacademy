@@ -27,7 +27,7 @@ const footerLinks = [
         heading: "Legal",
         links: [
             { label: "Privacy Policy", href: "/privacy" },
-            { label: "Refund Policy", href: "/contact" },
+            { label: "Refund Policy", href: "/refund" },
         ],
     },
 ];
